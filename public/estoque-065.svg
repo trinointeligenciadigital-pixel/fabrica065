@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Estoque 065">
+  <rect width="512" height="512" rx="96" fill="#0E7C9C"/>
+  <path d="M256 92v328M114 174l284 164M114 338l284-164M168 112l88 52 88-52M168 400l88-52 88 52" fill="none" stroke="#fff" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="256" cy="256" r="38" fill="#fff"/>
+</svg>
