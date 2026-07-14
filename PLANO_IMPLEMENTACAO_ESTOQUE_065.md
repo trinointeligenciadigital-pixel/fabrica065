@@ -15,6 +15,7 @@
 - Cadastros da Fase 2 implementados: formatos, colaboradores, permissões, QR, veículos, clientes, perdas e mínimos.
 - Autenticação operacional QR + PIN, sessão de 12 horas e produção real pelo colaborador implementadas.
 - Fase 3 concluída: produção, perdas, ajustes manuais, idempotência e bloqueio atômico de saldo negativo.
+- Admin pode registrar produção diretamente em Movimentações, com as mesmas conversões e garantias do fluxo QR.
 - Fase 4 concluída: manifestos de venda e patrocínio, baixa atômica multi-item e retornos parciais vinculados.
 - Próximo incremento: contagem física e reconciliação atômica do estoque.
 ## 1. Premissas de planejamento

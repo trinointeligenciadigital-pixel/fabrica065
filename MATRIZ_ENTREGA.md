@@ -27,4 +27,5 @@
 | Persistência dos cadastros | produtos, sabores, câmaras, formatos, frota, clientes, perdas, equipe e mínimos |
 | QR de câmara | token não sequencial, QR em alta correção, layout A4 e tela pública validada |
 | Operação por QR | produção e perda com permissão no backend, conversão por formato, idempotência, confirmação e recibo real |
+| Operação administrativa | produção, perda e ajuste com autorização no backend, saldo projetado, confirmação e recibo real |
 | Carregamentos | venda e patrocínio multi-item, transporte, idempotência, baixa atômica e cadeia de retornos |

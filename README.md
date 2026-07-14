@@ -17,9 +17,10 @@ A fundação técnica está ativa no ambiente de desenvolvimento:
 - dashboard reativo ligado aos saldos, mínimos e movimentos reais;
 - fluxo móvel real: QR, identificação, PIN, sessão de 12 horas e produção persistida;
 - produção append-only para admin e colaborador, com autor, câmara, horário e idempotência definidos no backend;
+- lançamento administrativo de produção em `/movimentacoes`, com conversão por formato, saldo projetado, revisão e recibo;
 - estados de carregamento, vazio, erro, acesso pendente e modo sem integração;
 - módulos carregados sob demanda para reduzir o pacote inicial;
-- 6 testes, lint, TypeScript e build de produção aprovados.
+- 18 testes, lint, TypeScript e build de produção aprovados.
 
 Sem as variáveis de ambiente, o dashboard entra em modo de demonstração e nenhuma movimentação é persistida.
 

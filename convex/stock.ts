@@ -238,37 +238,46 @@ export const registerAdminProduction = mutation({
     productId: v.id("products"),
     flavorId: v.optional(v.id("flavors")),
     packageFormatId: v.optional(v.id("packageFormats")),
-    quantityBase: v.number(),
-    occurredAt: v.number(),
+    quantityPackages: v.number(),
     requestId: v.string(),
   },
   handler: async (ctx, args) => {
     const admin = await requireAdmin(ctx);
-    assertPositiveInteger(args.quantityBase);
+    assertRequestId(args.requestId);
 
     const duplicate = await ctx.db.query("movements").withIndex("by_request_id", (query) => query.eq("requestId", args.requestId)).first();
-    if (duplicate) return duplicate._id;
+    if (duplicate) {
+      if (duplicate.type !== "producao" || duplicate.authorAdminId !== admin._id || duplicate.chamberId !== args.chamberId) {
+        throw new Error("REQUEST_ID_CONFLICT");
+      }
+      return { movementId: duplicate._id, quantityBase: duplicate.quantityBase, occurredAt: duplicate.occurredAt };
+    }
 
-    const [chamber, product, openCount] = await Promise.all([
-      ctx.db.get(args.chamberId),
-      ctx.db.get(args.productId),
-      ctx.db.query("physicalCounts").withIndex("by_chamber_status", (query) => query.eq("chamberId", args.chamberId).eq("status", "aberta")).first(),
-    ]);
-
-    if (!chamber?.active || !product?.active) throw new Error("INACTIVE_REFERENCE");
-    if (openCount) throw new Error("CHAMBER_UNDER_COUNT");
-    if (product.kind === "saborizado" && !args.flavorId) throw new Error("FLAVOR_REQUIRED");
-    if (product.kind !== "saborizado" && args.flavorId) throw new Error("FLAVOR_NOT_ALLOWED");
+    await ensureChamberAvailable(ctx, args.chamberId);
+    const { quantityBase } = await resolvePackageQuantity(
+      ctx,
+      args.productId,
+      args.flavorId,
+      args.packageFormatId,
+      args.quantityPackages,
+    );
 
     const now = Date.now();
-    return await ctx.db.insert("movements", {
-      ...args,
+    const movementId = await ctx.db.insert("movements", {
+      chamberId: args.chamberId,
+      productId: args.productId,
+      flavorId: args.flavorId,
+      packageFormatId: args.packageFormatId,
+      quantityBase,
       type: "producao",
       direction: "entrada",
       authorKind: "admin",
       authorAdminId: admin._id,
+      occurredAt: now,
+      requestId: args.requestId,
       createdAt: now,
     });
+    return { movementId, quantityBase, occurredAt: now };
   },
 });
 export const registerOperatorProduction = mutation({

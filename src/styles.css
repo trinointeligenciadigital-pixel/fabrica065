@@ -463,7 +463,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .session-exit { min-width: 42px; justify-content: center; font-size: 0; }
   .session-exit svg { width: 18px; height: 18px; }
 }
-/* Perdas e ajustes administrativos */
+/* Lançamentos administrativos */
 .movement-entry-loading { min-height: 420px; display: flex; align-items: center; justify-content: center; gap: 12px; color: var(--muted); }
 .movement-entry-loading .loading-spinner { width: 24px; height: 24px; margin: 0; }
 .movement-mode-tabs { display: flex; gap: 6px; width: fit-content; margin-bottom: 16px; padding: 5px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,.72); }
