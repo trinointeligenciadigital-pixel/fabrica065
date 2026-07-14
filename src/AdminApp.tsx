@@ -8,6 +8,7 @@ import { AdminAccess } from "./components/AdminAccess";
 const ChamberQrPage = lazy(() => import("./pages/ChamberQrPage").then((module) => ({ default: module.ChamberQrPage })));
 const CollaboratorsPage = lazy(() => import("./pages/CollaboratorsPage").then((module) => ({ default: module.CollaboratorsPage })));
 const DashboardPage = lazy(() => import("./pages/DashboardPage").then((module) => ({ default: module.DashboardPage })));
+const LoadsPage = lazy(() => import("./pages/LoadsPage").then((module) => ({ default: module.LoadsPage })));
 const MovementsPage = lazy(() => import("./pages/MovementsPage").then((module) => ({ default: module.MovementsPage })));
 const RegistersPage = lazy(() => import("./pages/RegistersPage").then((module) => ({ default: module.RegistersPage })));
 const SetupPage = lazy(() => import("./pages/SetupPage").then((module) => ({ default: module.SetupPage })));
@@ -28,6 +29,7 @@ function AdminRoutes({ integrationsReady }: { integrationsReady: boolean }) {
       <Routes>
         <Route path="/" element={<DashboardPage integrationsReady={integrationsReady} />} />
         <Route path="/movimentacoes" element={<MovementsPage integrationsReady={integrationsReady} />} />
+        <Route path="/carregamentos" element={<LoadsPage integrationsReady={integrationsReady} />} />
         <Route path="/cadastros/produtos" element={<RegistersPage section="products" integrationsReady={integrationsReady} />} />
         <Route path="/cadastros/sabores" element={<RegistersPage section="flavors" integrationsReady={integrationsReady} />} />
         <Route path="/cadastros/camaras" element={<RegistersPage section="chambers" integrationsReady={integrationsReady} />} />

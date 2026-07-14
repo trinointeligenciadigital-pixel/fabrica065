@@ -66,4 +66,4 @@ O primeiro usuário sincronizado é ativado como admin de bootstrap. Usuários s
 
 ## Próxima entrega
 
-Iniciar a Fase 4: carregamentos de venda e patrocínio, baixa atômica do estoque e retornos parciais sem exceder o carregamento original.
+Iniciar a Fase 5: contagem física por câmara, prévia de diferenças e fechamento atômico com ajustes vinculados.
