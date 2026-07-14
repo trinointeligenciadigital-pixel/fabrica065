@@ -170,16 +170,21 @@ export default defineSchema({
     chamberId: v.id("chambers"),
     status: v.union(v.literal("aberta"), v.literal("fechada"), v.literal("cancelada")),
     openedByAdminId: v.id("admins"),
+    openRequestId: v.optional(v.string()),
     openedAt: v.number(),
     closedByAdminId: v.optional(v.id("admins")),
     closedAt: v.optional(v.number()),
-  }).index("by_chamber_status", ["chamberId", "status"]),
+  })
+    .index("by_chamber_status", ["chamberId", "status"])
+    .index("by_open_request_id", ["openRequestId"]),
 
   physicalCountItems: defineTable({
     countId: v.id("physicalCounts"),
     productId: v.id("products"),
     flavorId: v.optional(v.id("flavors")),
-    countedBase: v.number(),
+    countedBase: v.optional(v.number()),
+    countedByAdminId: v.optional(v.id("admins")),
+    countedAt: v.optional(v.number()),
     systemBaseAtClose: v.optional(v.number()),
     adjustmentBase: v.optional(v.number()),
   })
