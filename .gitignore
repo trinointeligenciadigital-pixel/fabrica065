@@ -3,7 +3,6 @@ dist
 .env
 .env.local
 .env.*.local
-!.env.example
 convex/_generated
 coverage
 *.log
@@ -11,3 +10,7 @@ coverage
 .impeccable/live
 .vercel
 .env*
+playwright/.clerk/
+playwright-report/
+test-results/
+!.env.example

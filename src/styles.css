@@ -915,3 +915,64 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .history-context strong { display: none; }
   .history-drawer { width: 100%; }
 }
+
+/* Acessibilidade e diagnóstico operacional */
+.skip-link {
+  position: fixed;
+  z-index: 120;
+  top: 10px;
+  left: 10px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: var(--shadow);
+  transform: translateY(-72px);
+  transition: transform 160ms ease;
+}
+.skip-link:focus { transform: translateY(0); }
+.diagnostic-page-heading { align-items: center; }
+.diagnostic-summary { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; padding: 20px; border: 1px solid #b7ddca; border-radius: var(--radius); background: var(--success-soft); }
+.diagnostic-summary.has-critical { border-color: #efb7bb; background: var(--danger-soft); }
+.diagnostic-summary-icon { width: 50px; height: 50px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; background: var(--surface); color: var(--success); }
+.diagnostic-summary.has-critical .diagnostic-summary-icon { color: var(--danger); }
+.diagnostic-summary p, .diagnostic-summary h2, .diagnostic-summary span { margin: 0; }
+.diagnostic-summary p { color: #24694d; font-size: 11px; font-weight: 760; letter-spacing: .07em; text-transform: uppercase; }
+.diagnostic-summary.has-critical p { color: #8f2028; }
+.diagnostic-summary h2 { margin-top: 3px; font-size: 18px; line-height: 25px; }
+.diagnostic-summary span { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 18px; }
+.diagnostic-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+.diagnostic-metrics article { min-width: 0; display: flex; align-items: center; gap: 12px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.diagnostic-metrics article > svg { flex: 0 0 auto; color: var(--primary); }
+.diagnostic-metrics span { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.diagnostic-metrics strong { font: 650 18px/1.2 "IBM Plex Mono", monospace; }
+.diagnostic-metrics small { overflow-wrap: anywhere; color: var(--muted); font-size: 11px; }
+.diagnostic-check-list { display: flex; flex-direction: column; }
+.diagnostic-check { min-width: 0; display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; align-items: center; gap: 13px; padding: 16px 20px; border-top: 1px solid var(--line); }
+.diagnostic-check:first-child { border-top: 0; }
+.diagnostic-check-icon { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; background: var(--success-soft); color: var(--success); }
+.diagnostic-check.is-warning .diagnostic-check-icon { background: var(--warning-soft); color: var(--warning); }
+.diagnostic-check.is-critical .diagnostic-check-icon { background: var(--danger-soft); color: var(--danger); }
+.diagnostic-check-copy { min-width: 0; }
+.diagnostic-check-copy > div { display: flex; align-items: baseline; flex-wrap: wrap; gap: 7px 12px; }
+.diagnostic-check-copy h3, .diagnostic-check-copy p { margin: 0; }
+.diagnostic-check-copy h3 { font-size: 14px; line-height: 20px; overflow-wrap: anywhere; }
+.diagnostic-check-copy div span { color: var(--success); font-size: 11px; font-weight: 720; }
+.diagnostic-check.is-warning .diagnostic-check-copy div span { color: #7c4f08; }
+.diagnostic-check.is-critical .diagnostic-check-copy div span { color: #9b2830; }
+.diagnostic-check-copy p { margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 18px; overflow-wrap: anywhere; }
+.diagnostic-footnote { margin: 13px 2px 0; color: var(--muted); font-size: 11px; }
+
+@media (max-width: 767px) {
+  .diagnostic-page-heading .button { width: 100%; }
+  .diagnostic-summary { align-items: flex-start; }
+  .diagnostic-summary-icon { width: 42px; height: 42px; }
+  .diagnostic-metrics { grid-template-columns: 1fr; }
+  .diagnostic-check { grid-template-columns: 36px minmax(0, 1fr); padding-inline: 14px; }
+  .diagnostic-check > .button { grid-column: 2; justify-self: start; }
+}

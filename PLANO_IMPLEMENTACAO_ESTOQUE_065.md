@@ -1,7 +1,7 @@
 # Plano de implementação — Estoque 065
 
 **Base:** PRD Estoque 065 v1.0, julho/2026  
-**Status:** em execução; Fase 6 implementada em 13/07/2026 e homologação preparada
+**Status:** em execução; base técnica da Fase 7 implementada em 13/07/2026, piloto operacional pendente
 **Modelo de execução:** projeto greenfield, entregas incrementais e homologação por fluxo  
 **Estimativa inicial:** 45–60 dias úteis de desenvolvimento para uma pessoa full-stack, mais disponibilidade do cliente para validações  
 **Objetivo:** colocar em produção uma PWA confiável para registrar e consultar toda movimentação de estoque da 065 Gelo, substituindo o WhatsApp como registro operacional.
@@ -19,7 +19,8 @@
 - Fase 4 concluída: manifestos de venda e patrocínio, baixa atômica multi-item e retornos parciais vinculados.
 - Fase 5 concluída: contagem exclusiva por câmara, rascunho, prévia de diferenças e reconciliação atômica.
 - Fase 6 implementada: dashboard, mínimos, consulta de estoque e histórico paginado com detalhes auditáveis.
-- Próximo incremento: Fase 7 — hardening, testes E2E, piloto e preparação para o go-live.
+- Fase 7 iniciada: diagnóstico de integridade, revisão de autorização, acessibilidade e testes E2E públicos implementados.
+- Próximo incremento: piloto controlado, medição em 4G, E2E autenticado com conta exclusiva de teste e treinamento.
 ## 1. Premissas de planejamento
 
 - O repositório começa vazio.
@@ -334,6 +335,14 @@ Os critérios de aceite 6, 7 e 8 do PRD são demonstrados em homologação, incl
 - Congelar o WhatsApp como canal de registro e iniciar o sistema.
 - Fazer acompanhamento intensivo nos primeiros dias.
 
+### Progresso técnico em 13/07/2026
+
+- Concluído: auditoria das funções públicas e confirmação de autorização administrativa ou sessão operacional.
+- Concluído: diagnóstico reativo de integridade, sem escrita, disponível para admins.
+- Concluído: link de salto ao conteúdo e auditoria Axe do acesso público.
+- Concluído: 29 testes unitários e 3 cenários E2E públicos em Chromium.
+- Preparado: E2E autenticado com Clerk, ativado somente por chave secreta e conta exclusivas de teste.
+- Pendente de campo: celular real, rede 4G/Wi-Fi nas portas, cronometragem, piloto, carga real, treinamento e go-live.
 ### Estratégia de implantação
 
 1. Homologação com dados fictícios.

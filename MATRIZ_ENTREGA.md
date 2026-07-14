@@ -18,10 +18,11 @@
 | Requisito | Evidência atual |
 |---|---|
 | TypeScript estrito | npx tsc -b e npm run build |
-| Testes automatizados | 26 testes de quantidade, PIN, sessão, saldo, carregamentos, retornos, contagem e filtros de histórico |
+| Testes automatizados | 29 testes unitários e 3 E2E públicos para autenticação, QR inválido e largura móvel |
 | Qualidade estática | npm run lint |
 | Offline sem falso sucesso | banner global e bloqueio reativo da confirmação |
-| Acessibilidade inicial | foco visível, semântica, estados textuais, carregamento e vazio |
+| Diagnóstico operacional | verificação reativa de saldos negativos, referências, origens, sessões e contagens abertas |
+| Acessibilidade inicial | foco visível, link para pular ao conteúdo, estados textuais e auditoria Axe na tela pública |
 | Identidade no backend | bootstrap lazy e helper requireAdmin consultam admin ativo no banco |
 | Proteção das rotas | login Clerk obrigatório e estado de acesso pendente |
 | Persistência dos cadastros | produtos, sabores, câmaras, formatos, frota, clientes, perdas, equipe e mínimos |

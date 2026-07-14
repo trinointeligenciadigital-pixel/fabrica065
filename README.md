@@ -21,9 +21,10 @@ A fundação técnica está ativa no ambiente de desenvolvimento:
 - produção append-only para admin e colaborador, com autor, câmara, horário e idempotência definidos no backend;
 - lançamento administrativo de produção em `/movimentacoes`, com conversão por formato, saldo projetado, revisão e recibo;
 - contagem física por câmara em `/contagens`, com rascunho, prévia de diferenças, bloqueio operacional e ajustes atômicos;
+- diagnóstico administrativo em `/diagnostico`, com controles de integridade do ledger, sessões e contagens;
 - estados de carregamento, vazio, erro, acesso pendente e modo sem integração;
 - módulos carregados sob demanda para reduzir o pacote inicial;
-- 26 testes, lint, TypeScript e build de produção aprovados.
+- 29 testes unitários, 3 testes E2E públicos, auditoria automatizada de acessibilidade, lint, TypeScript e build de produção aprovados.
 
 Sem as variáveis de ambiente, o dashboard entra em modo de demonstração e nenhuma movimentação é persistida.
 
@@ -43,6 +44,8 @@ Sem as variáveis de ambiente, o dashboard entra em modo de demonstração e nen
 
 O primeiro usuário sincronizado é ativado como admin de bootstrap. Usuários seguintes entram inativos até aprovação no banco.
 
+Para habilitar o E2E autenticado, use exclusivamente uma instância Clerk de desenvolvimento e defina `CLERK_SECRET_KEY` e `E2E_ADMIN_EMAIL` no arquivo local não versionado. Sem essas variáveis, apenas a suíte pública é executada.
+
 ## Acesso pelo celular em desenvolvimento
 
 - O computador e o celular devem estar conectados à mesma rede Wi-Fi.
@@ -57,6 +60,7 @@ O primeiro usuário sincronizado é ativado como admin de bootstrap. Usuários s
 - npm run test
 - npm run lint
 - npm run build
+- npm run test:e2e:public
 - npm run convex:dev
 
 ## Documentos
@@ -70,4 +74,4 @@ O primeiro usuário sincronizado é ativado como admin de bootstrap. Usuários s
 
 ## Próxima entrega
 
-Iniciar a Fase 7: hardening, testes E2E, piloto controlado e preparação para o go-live.
+Concluir a Fase 7 com credenciais exclusivas de teste, piloto em uma câmara, medição em 4G e treinamento da equipe.

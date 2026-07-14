@@ -6,6 +6,7 @@ import {
   PackagePlus,
   ScrollText,
   Settings2,
+  ShieldCheck,
   Snowflake,
   Truck,
   UsersRound,
@@ -35,6 +36,7 @@ const registerItems = [
   { label: "Câmaras", icon: Warehouse, to: "/cadastros/camaras" },
   { label: "Equipe", icon: UsersRound, to: "/configuracoes/colaboradores" },
   { label: "Preparação", icon: Settings2, to: "/configuracoes/formatos" },
+  { label: "Diagnóstico", icon: ShieldCheck, to: "/diagnostico" },
 ];
 
 export function AdminShell({ children, integrationsReady }: AdminShellProps) {
@@ -48,6 +50,7 @@ export function AdminShell({ children, integrationsReady }: AdminShellProps) {
   return (
     <div className="app-frame">
       <OfflineBanner />
+      <a className="skip-link" href="#main-content">Ir para o conteúdo principal</a>
       <aside className="sidebar" aria-label="Navegação principal">
         <Link className="brand" to="/" aria-label="Estoque 065 — início">
           <span className="brand-mark" aria-hidden="true"><Snowflake size={22} /></span>
@@ -89,7 +92,7 @@ export function AdminShell({ children, integrationsReady }: AdminShellProps) {
             ) : <span className="mode-badge">Dados de exemplo</span>}
           </div>
         </header>
-        <main className="main-content">{children}</main>
+        <main className="main-content" id="main-content" tabIndex={-1}>{children}</main>
       </div>
     </div>
   );
