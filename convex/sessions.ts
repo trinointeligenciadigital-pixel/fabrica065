@@ -117,13 +117,14 @@ export const current = query({
         args.chamberToken,
         args.sessionToken,
       );
-      const [products, flavors, formats] = permission.canProduce
+      const [products, flavors, formats, lossReasons] = permission.canProduce || permission.canDispatch
         ? await Promise.all([
             ctx.db.query("products").collect(),
             ctx.db.query("flavors").collect(),
             ctx.db.query("packageFormats").collect(),
+            ctx.db.query("lossReasons").collect(),
           ])
-        : [[], [], []];
+        : [[], [], [], []];
 
       return {
         valid: true as const,
@@ -143,7 +144,10 @@ export const current = query({
         formats: formats
           .filter((item) => item.active)
           .map((item) => ({ id: item._id, productId: item.productId, name: item.name, gramsPerPackage: item.gramsPerPackage }))
-          .sort((a, b) => a.gramsPerPackage - b.gramsPerPackage),
+          .sort((a, b) => a.gramsPerPackage - b.gramsPerPackage),        lossReasons: lossReasons
+          .filter((item) => item.active)
+          .map((item) => ({ id: item._id, name: item.name }))
+          .sort((a, b) => a.name.localeCompare(b.name, "pt-BR")),
       };
     } catch {
       return { valid: false as const };

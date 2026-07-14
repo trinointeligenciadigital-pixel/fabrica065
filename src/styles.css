@@ -463,3 +463,54 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .session-exit { min-width: 42px; justify-content: center; font-size: 0; }
   .session-exit svg { width: 18px; height: 18px; }
 }
+/* Perdas e ajustes administrativos */
+.movement-entry-loading { min-height: 420px; display: flex; align-items: center; justify-content: center; gap: 12px; color: var(--muted); }
+.movement-entry-loading .loading-spinner { width: 24px; height: 24px; margin: 0; }
+.movement-mode-tabs { display: flex; gap: 6px; width: fit-content; margin-bottom: 16px; padding: 5px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,.72); }
+.movement-mode-tabs button { min-height: 42px; display: inline-flex; align-items: center; gap: 8px; padding: 0 15px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font-size: 13px; font-weight: 680; cursor: pointer; }
+.movement-mode-tabs button:hover { color: var(--ink); background: var(--surface); }
+.movement-mode-tabs button.is-active { background: var(--primary-soft); color: var(--primary-dark); }
+.movement-entry-section { max-width: 980px; overflow: visible; }
+.movement-entry-form, .movement-review { padding: 24px; }
+.movement-form-grid { display: grid; grid-template-columns: repeat(2, minmax(220px, 1fr)); gap: 16px; }
+.movement-note { margin-top: 16px; }
+.movement-note textarea { min-height: 104px; resize: vertical; padding: 12px; border: 1px solid var(--line-strong); border-radius: 8px; background: #fff; color: var(--ink); line-height: 1.5; }
+.movement-note textarea:focus-visible { outline: none; box-shadow: var(--focus); }
+.available-balance { min-height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 18px; padding: 0 16px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-subtle); }
+.available-balance span { color: var(--muted); font-size: 12px; font-weight: 650; }
+.available-balance strong { font: 650 15px/1 "IBM Plex Mono", monospace; }
+.movement-submit { width: 100%; margin-top: 20px; }
+.movement-review .section-heading { padding: 0 0 18px; }
+.movement-review-actions { display: grid; grid-template-columns: 1fr 1.35fr; gap: 10px; margin-top: 18px; }
+.admin-receipt { min-height: 470px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 34px 24px; text-align: center; }
+.admin-receipt > p { margin: 16px 0 0; color: var(--success); font-size: 12px; font-weight: 750; letter-spacing: .055em; text-transform: uppercase; }
+.admin-receipt h2 { margin: 5px 0 0; font-size: 25px; }
+.admin-receipt > span:not(.success-symbol) { margin-top: 7px; color: var(--muted); font-size: 13px; }
+.admin-receipt .success-note { width: min(100%, 520px); margin: 24px 0 18px; }
+
+@media (max-width: 767px) {
+  .movement-mode-tabs { width: 100%; }
+  .movement-mode-tabs button { flex: 1; justify-content: center; padding-inline: 8px; }
+  .movement-entry-form, .movement-review { padding: 18px 14px; }
+  .movement-form-grid { grid-template-columns: 1fr; }
+  .movement-review-actions { grid-template-columns: 1fr; }
+}
+/* Escolha operacional e perda via QR */
+.operation-action-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 26px; }
+.operation-action-options > button { min-height: 94px; display: grid; grid-template-columns: 48px 1fr 20px; align-items: center; gap: 13px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink); text-align: left; cursor: pointer; }
+.operation-action-options > button:hover { border-color: #9cb6bd; background: var(--surface-subtle); transform: translateY(-1px); }
+.operation-action-options > button > span:nth-child(2) { display: flex; flex-direction: column; gap: 4px; }
+.operation-action-options strong { font-size: 14px; }
+.operation-action-options small { color: var(--muted); font-size: 11px; line-height: 16px; }
+.operation-action-options > button > svg { color: #789098; }
+.operation-action-icon { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 9px; }
+.action-production { background: var(--success-soft); color: var(--success); }
+.action-loss { background: var(--danger-soft); color: #9a2931; }
+.loss-fields { display: grid; gap: 14px; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
+.loss-fields textarea { min-height: 82px; resize: vertical; padding: 11px 12px; border: 1px solid var(--line-strong); border-radius: 8px; background: #fff; }
+.loss-fields textarea:focus-visible { outline: none; box-shadow: var(--focus); }
+.operation-another-action { margin-top: 13px; }
+
+@media (max-width: 767px) {
+  .operation-action-options { grid-template-columns: 1fr; }
+}

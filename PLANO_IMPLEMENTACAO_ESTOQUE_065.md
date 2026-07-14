@@ -1,7 +1,7 @@
 # Plano de implementação — Estoque 065
 
 **Base:** PRD Estoque 065 v1.0, julho/2026  
-**Status:** em execução; fundação autenticada e primeiro incremento da Fase 2 concluídos em 13/07/2026  
+**Status:** em execução; Fase 3 concluída em 13/07/2026 e Fase 4 preparada
 **Modelo de execução:** projeto greenfield, entregas incrementais e homologação por fluxo  
 **Estimativa inicial:** 45–60 dias úteis de desenvolvimento para uma pessoa full-stack, mais disponibilidade do cliente para validações  
 **Objetivo:** colocar em produção uma PWA confiável para registrar e consultar toda movimentação de estoque da 065 Gelo, substituindo o WhatsApp como registro operacional.
@@ -14,7 +14,8 @@
 - Dashboard consulta saldos, mínimos e movimentos reais de forma reativa.
 - Cadastros da Fase 2 implementados: formatos, colaboradores, permissões, QR, veículos, clientes, perdas e mínimos.
 - Autenticação operacional QR + PIN, sessão de 12 horas e produção real pelo colaborador implementadas.
-- Próximo incremento: perdas, ajustes manuais e bloqueio de saldo negativo nas saídas.
+- Fase 3 concluída: produção, perdas, ajustes manuais, idempotência e bloqueio atômico de saldo negativo.
+- Próximo incremento: carregamentos de venda e patrocínio, com retornos parciais controlados.
 ## 1. Premissas de planejamento
 
 - O repositório começa vazio.

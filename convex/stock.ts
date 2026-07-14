@@ -1,3 +1,6 @@
+import type { Id } from "./_generated/dataModel";
+import type { MutationCtx } from "./_generated/server";
+import { assertSufficientBalance, calculateBalance } from "./lib/stockBalance";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { requireAdmin } from "./lib/auth";
@@ -9,6 +12,85 @@ function assertPositiveInteger(value: number) {
   }
 }
 
+function assertRequestId(value: string) {
+  if (value.length < 10 || value.length > 100) throw new Error("INVALID_REQUEST_ID");
+}
+
+function normalizeNote(value: string | undefined, required = false) {
+  const note = value?.trim();
+  if (required && (!note || note.length < 5)) throw new Error("NOTE_REQUIRED");
+  if (note && note.length > 500) throw new Error("NOTE_TOO_LONG");
+  return note || undefined;
+}
+
+async function ensureChamberAvailable(ctx: MutationCtx, chamberId: Id<"chambers">) {
+  const [chamber, openCount] = await Promise.all([
+    ctx.db.get(chamberId),
+    ctx.db.query("physicalCounts")
+      .withIndex("by_chamber_status", (query) => query.eq("chamberId", chamberId).eq("status", "aberta"))
+      .first(),
+  ]);
+  if (!chamber?.active) throw new Error("INACTIVE_REFERENCE");
+  if (openCount) throw new Error("CHAMBER_UNDER_COUNT");
+  return chamber;
+}
+
+async function resolvePackageQuantity(
+  ctx: MutationCtx,
+  productId: Id<"products">,
+  flavorId: Id<"flavors"> | undefined,
+  packageFormatId: Id<"packageFormats"> | undefined,
+  quantityPackages: number,
+) {
+  assertPositiveInteger(quantityPackages);
+  const [product, flavor, packageFormat] = await Promise.all([
+    ctx.db.get(productId),
+    flavorId ? ctx.db.get(flavorId) : null,
+    packageFormatId ? ctx.db.get(packageFormatId) : null,
+  ]);
+  if (!product?.active) throw new Error("INACTIVE_REFERENCE");
+
+  if (product.kind === "saborizado") {
+    if (!flavor?.active) throw new Error("FLAVOR_REQUIRED");
+    if (packageFormat) throw new Error("FORMAT_NOT_ALLOWED");
+    return { product, quantityBase: quantityPackages };
+  }
+
+  if (flavor) throw new Error("FLAVOR_NOT_ALLOWED");
+  if (!packageFormat?.active || packageFormat.productId !== product._id) throw new Error("FORMAT_REQUIRED");
+  const quantityBase = quantityPackages * packageFormat.gramsPerPackage;
+  assertPositiveInteger(quantityBase);
+  return { product, quantityBase };
+}
+
+async function validateBaseItem(
+  ctx: MutationCtx,
+  productId: Id<"products">,
+  flavorId: Id<"flavors"> | undefined,
+) {
+  const [product, flavor] = await Promise.all([
+    ctx.db.get(productId),
+    flavorId ? ctx.db.get(flavorId) : null,
+  ]);
+  if (!product?.active) throw new Error("INACTIVE_REFERENCE");
+  if (product.kind === "saborizado" && !flavor?.active) throw new Error("FLAVOR_REQUIRED");
+  if (product.kind !== "saborizado" && flavor) throw new Error("FLAVOR_NOT_ALLOWED");
+  return product;
+}
+
+async function availableBalance(
+  ctx: MutationCtx,
+  chamberId: Id<"chambers">,
+  productId: Id<"products">,
+  flavorId: Id<"flavors"> | undefined,
+) {
+  const movements = await ctx.db.query("movements")
+    .withIndex("by_chamber_product_flavor", (query) =>
+      query.eq("chamberId", chamberId).eq("productId", productId).eq("flavorId", flavorId),
+    )
+    .collect();
+  return calculateBalance(movements);
+}
 export const listBalances = query({
   args: { chamberId: v.optional(v.id("chambers")) },
   handler: async (ctx, args) => {
@@ -261,5 +343,219 @@ export const registerOperatorProduction = mutation({
     });
     await ctx.db.patch(session._id, { lastUsedAt: now });
     return { movementId, quantityBase, occurredAt: now };
+  },
+});
+export const adminMovementOptions = query({
+  args: {},
+  handler: async (ctx) => {
+    await requireAdmin(ctx);
+    const [chambers, products, flavors, formats, lossReasons, movements] = await Promise.all([
+      ctx.db.query("chambers").collect(),
+      ctx.db.query("products").collect(),
+      ctx.db.query("flavors").collect(),
+      ctx.db.query("packageFormats").collect(),
+      ctx.db.query("lossReasons").collect(),
+      ctx.db.query("movements").collect(),
+    ]);
+
+    const balanceMap = new Map<string, number>();
+    for (const movement of movements) {
+      const key = `${movement.chamberId}:${movement.productId}:${movement.flavorId ?? "none"}`;
+      balanceMap.set(key, (balanceMap.get(key) ?? 0) + (movement.direction === "entrada" ? movement.quantityBase : -movement.quantityBase));
+    }
+
+    return {
+      chambers: chambers.filter((item) => item.active).sort((a, b) => a.name.localeCompare(b.name, "pt-BR")),
+      products: products.filter((item) => item.active).sort((a, b) => a.name.localeCompare(b.name, "pt-BR")),
+      flavors: flavors.filter((item) => item.active).sort((a, b) => a.name.localeCompare(b.name, "pt-BR")),
+      formats: formats.filter((item) => item.active).sort((a, b) => a.gramsPerPackage - b.gramsPerPackage),
+      lossReasons: lossReasons.filter((item) => item.active).sort((a, b) => a.name.localeCompare(b.name, "pt-BR")),
+      balances: [...balanceMap].map(([key, quantityBase]) => ({ key, quantityBase })),
+    };
+  },
+});
+
+export const registerOperatorLoss = mutation({
+  args: {
+    chamberToken: v.string(),
+    sessionToken: v.string(),
+    productId: v.id("products"),
+    flavorId: v.optional(v.id("flavors")),
+    packageFormatId: v.optional(v.id("packageFormats")),
+    quantityPackages: v.number(),
+    lossReasonId: v.id("lossReasons"),
+    note: v.optional(v.string()),
+    requestId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    assertRequestId(args.requestId);
+    const note = normalizeNote(args.note);
+    const { session, chamber, collaborator } = await requireOperatorSession(
+      ctx,
+      args.chamberToken,
+      args.sessionToken,
+      "dispatch",
+    );
+
+    const duplicate = await ctx.db.query("movements")
+      .withIndex("by_request_id", (query) => query.eq("requestId", args.requestId))
+      .first();
+    if (duplicate) {
+      if (duplicate.type !== "perda" || duplicate.authorCollaboratorId !== collaborator._id || duplicate.chamberId !== chamber._id) {
+        throw new Error("REQUEST_ID_CONFLICT");
+      }
+      return { movementId: duplicate._id, quantityBase: duplicate.quantityBase, occurredAt: duplicate.occurredAt };
+    }
+
+    const [lossReason] = await Promise.all([
+      ctx.db.get(args.lossReasonId),
+      ensureChamberAvailable(ctx, chamber._id),
+    ]);
+    if (!lossReason?.active) throw new Error("LOSS_REASON_REQUIRED");
+    const { product, quantityBase } = await resolvePackageQuantity(
+      ctx,
+      args.productId,
+      args.flavorId,
+      args.packageFormatId,
+      args.quantityPackages,
+    );
+    const balance = await availableBalance(ctx, chamber._id, product._id, args.flavorId);
+    assertSufficientBalance(balance, quantityBase);
+
+    const now = Date.now();
+    const movementId = await ctx.db.insert("movements", {
+      chamberId: chamber._id,
+      productId: product._id,
+      flavorId: args.flavorId,
+      packageFormatId: args.packageFormatId,
+      type: "perda",
+      direction: "saida",
+      quantityBase,
+      authorKind: "colaborador",
+      authorCollaboratorId: collaborator._id,
+      sourceType: "lossReason",
+      sourceId: String(lossReason._id),
+      lossReasonId: lossReason._id,
+      note,
+      requestId: args.requestId,
+      occurredAt: now,
+      createdAt: now,
+    });
+    await ctx.db.patch(session._id, { lastUsedAt: now });
+    return { movementId, quantityBase, occurredAt: now };
+  },
+});
+
+export const registerAdminLoss = mutation({
+  args: {
+    chamberId: v.id("chambers"),
+    productId: v.id("products"),
+    flavorId: v.optional(v.id("flavors")),
+    packageFormatId: v.optional(v.id("packageFormats")),
+    quantityPackages: v.number(),
+    lossReasonId: v.id("lossReasons"),
+    note: v.optional(v.string()),
+    requestId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const admin = await requireAdmin(ctx);
+    assertRequestId(args.requestId);
+    const note = normalizeNote(args.note);
+    const duplicate = await ctx.db.query("movements")
+      .withIndex("by_request_id", (query) => query.eq("requestId", args.requestId))
+      .first();
+    if (duplicate) {
+      if (duplicate.type !== "perda" || duplicate.authorAdminId !== admin._id || duplicate.chamberId !== args.chamberId) {
+        throw new Error("REQUEST_ID_CONFLICT");
+      }
+      return { movementId: duplicate._id, quantityBase: duplicate.quantityBase, occurredAt: duplicate.occurredAt };
+    }
+
+    const [lossReason] = await Promise.all([
+      ctx.db.get(args.lossReasonId),
+      ensureChamberAvailable(ctx, args.chamberId),
+    ]);
+    if (!lossReason?.active) throw new Error("LOSS_REASON_REQUIRED");
+    const { product, quantityBase } = await resolvePackageQuantity(
+      ctx,
+      args.productId,
+      args.flavorId,
+      args.packageFormatId,
+      args.quantityPackages,
+    );
+    const balance = await availableBalance(ctx, args.chamberId, product._id, args.flavorId);
+    assertSufficientBalance(balance, quantityBase);
+
+    const now = Date.now();
+    const movementId = await ctx.db.insert("movements", {
+      chamberId: args.chamberId,
+      productId: product._id,
+      flavorId: args.flavorId,
+      packageFormatId: args.packageFormatId,
+      type: "perda",
+      direction: "saida",
+      quantityBase,
+      authorKind: "admin",
+      authorAdminId: admin._id,
+      sourceType: "lossReason",
+      sourceId: String(lossReason._id),
+      lossReasonId: lossReason._id,
+      note,
+      requestId: args.requestId,
+      occurredAt: now,
+      createdAt: now,
+    });
+    return { movementId, quantityBase, occurredAt: now };
+  },
+});
+
+export const registerAdminAdjustment = mutation({
+  args: {
+    chamberId: v.id("chambers"),
+    productId: v.id("products"),
+    flavorId: v.optional(v.id("flavors")),
+    direction: v.union(v.literal("entrada"), v.literal("saida")),
+    quantityBase: v.number(),
+    note: v.string(),
+    requestId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const admin = await requireAdmin(ctx);
+    assertRequestId(args.requestId);
+    assertPositiveInteger(args.quantityBase);
+    const note = normalizeNote(args.note, true);
+    const duplicate = await ctx.db.query("movements")
+      .withIndex("by_request_id", (query) => query.eq("requestId", args.requestId))
+      .first();
+    if (duplicate) {
+      if (duplicate.type !== "ajuste_manual" || duplicate.authorAdminId !== admin._id || duplicate.chamberId !== args.chamberId) {
+        throw new Error("REQUEST_ID_CONFLICT");
+      }
+      return { movementId: duplicate._id, quantityBase: duplicate.quantityBase, occurredAt: duplicate.occurredAt };
+    }
+
+    await ensureChamberAvailable(ctx, args.chamberId);
+    const product = await validateBaseItem(ctx, args.productId, args.flavorId);
+    if (args.direction === "saida") {
+      const balance = await availableBalance(ctx, args.chamberId, product._id, args.flavorId);
+      assertSufficientBalance(balance, args.quantityBase);
+    }
+
+    const now = Date.now();
+    const movementId = await ctx.db.insert("movements", {
+      chamberId: args.chamberId,
+      productId: product._id,
+      flavorId: args.flavorId,
+      type: "ajuste_manual",
+      direction: args.direction,
+      quantityBase: args.quantityBase,
+      authorKind: "admin",
+      authorAdminId: admin._id,
+      note,
+      requestId: args.requestId,
+      occurredAt: now,
+      createdAt: now,
+    });
+    return { movementId, quantityBase: args.quantityBase, occurredAt: now };
   },
 });

@@ -66,4 +66,4 @@ O primeiro usuário sincronizado é ativado como admin de bootstrap. Usuários s
 
 ## Próxima entrega
 
-Completar o restante da Fase 3: lançamento de perdas, ajustes manuais do admin e validação de saldo disponível para todas as saídas.
+Iniciar a Fase 4: carregamentos de venda e patrocínio, baixa atômica do estoque e retornos parciais sem exceder o carregamento original.

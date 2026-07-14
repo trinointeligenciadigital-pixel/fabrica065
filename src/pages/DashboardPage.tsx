@@ -115,7 +115,7 @@ function DashboardContent({ data, integrationsReady }: { data: DashboardData; in
           <p>Acompanhe o saldo atual e aja primeiro onde o mínimo foi atingido.</p>
         </div>
         <div className="heading-actions">
-          <button className="button button-secondary"><Clock3 size={18} /> Ver histórico</button>
+          <Link className="button button-secondary" to="/movimentacoes"><Clock3 size={18} /> Nova movimentação</Link>
           <Link className="button button-primary" to="/cadastros/produtos"><PackagePlus size={18} /> Gerenciar produtos</Link>
         </div>
       </section>
@@ -180,7 +180,7 @@ function DashboardContent({ data, integrationsReady }: { data: DashboardData; in
 
       <section className="bottom-grid">
         <div className="content-section movements-section">
-          <div className="section-heading"><div><h2>Movimentações recentes</h2><p>Últimos registros do livro-razão.</p></div><button className="icon-button" aria-label="Abrir histórico"><ArrowRight size={18} /></button></div>
+          <div className="section-heading"><div><h2>Movimentações recentes</h2><p>Últimos registros do livro-razão.</p></div><Link className="icon-button" to="/movimentacoes" aria-label="Abrir movimentações"><ArrowRight size={18} /></Link></div>
           {data.recent.length === 0 ? (
             <div className="empty-state compact-empty"><strong>Nenhuma movimentação registrada</strong><p>Produções, saídas e ajustes aparecerão aqui.</p></div>
           ) : (

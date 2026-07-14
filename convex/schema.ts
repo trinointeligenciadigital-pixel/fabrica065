@@ -207,6 +207,7 @@ export default defineSchema({
     authorCollaboratorId: v.optional(v.id("collaborators")),
     sourceType: v.optional(v.string()),
     sourceId: v.optional(v.string()),
+    lossReasonId: v.optional(v.id("lossReasons")),
     note: v.optional(v.string()),
     requestId: v.string(),
     occurredAt: v.number(),
