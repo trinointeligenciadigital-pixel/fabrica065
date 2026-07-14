@@ -16,13 +16,14 @@ A fundação técnica está ativa no ambiente de desenvolvimento:
 - token operacional não sequencial e QR imprimível gerados para cada câmara;
 - dashboard reativo ligado aos saldos, mínimos e movimentos reais;
 - módulo de estoque em `/estoque`, com busca e filtros por câmara e situação do saldo;
+- histórico paginado em `/historico`, com filtros combináveis, autoria e detalhe da origem de cada lançamento;
 - fluxo móvel real: QR, identificação, PIN, sessão de 12 horas e produção persistida;
 - produção append-only para admin e colaborador, com autor, câmara, horário e idempotência definidos no backend;
 - lançamento administrativo de produção em `/movimentacoes`, com conversão por formato, saldo projetado, revisão e recibo;
 - contagem física por câmara em `/contagens`, com rascunho, prévia de diferenças, bloqueio operacional e ajustes atômicos;
 - estados de carregamento, vazio, erro, acesso pendente e modo sem integração;
 - módulos carregados sob demanda para reduzir o pacote inicial;
-- 22 testes, lint, TypeScript e build de produção aprovados.
+- 26 testes, lint, TypeScript e build de produção aprovados.
 
 Sem as variáveis de ambiente, o dashboard entra em modo de demonstração e nenhuma movimentação é persistida.
 
@@ -69,4 +70,4 @@ O primeiro usuário sincronizado é ativado como admin de bootstrap. Usuários s
 
 ## Próxima entrega
 
-Iniciar a Fase 6: histórico completo, filtros operacionais e detalhamento auditável das movimentações.
+Iniciar a Fase 7: hardening, testes E2E, piloto controlado e preparação para o go-live.

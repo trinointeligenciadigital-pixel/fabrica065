@@ -4,6 +4,7 @@ import {
   History,
   LayoutDashboard,
   PackagePlus,
+  ScrollText,
   Settings2,
   Snowflake,
   Truck,
@@ -24,6 +25,7 @@ const navItems = [
   { label: "Visão geral", icon: LayoutDashboard, to: "/" },
   { label: "Estoque", icon: Boxes, to: "/estoque" },
   { label: "Movimentações", icon: History, to: "/movimentacoes" },
+  { label: "Histórico", icon: ScrollText, to: "/historico" },
   { label: "Carregamentos", icon: Truck, to: "/carregamentos" },
   { label: "Contagens", icon: ClipboardCheck, to: "/contagens" },
 ];

@@ -218,8 +218,13 @@ export default defineSchema({
     occurredAt: v.number(),
     createdAt: v.number(),
   })
+    .index("by_occurred_at", ["occurredAt"])
     .index("by_chamber", ["chamberId"])
     .index("by_chamber_occurred_at", ["chamberId", "occurredAt"])
+    .index("by_product_occurred_at", ["productId", "occurredAt"])
+    .index("by_type_occurred_at", ["type", "occurredAt"])
+    .index("by_admin_occurred_at", ["authorAdminId", "occurredAt"])
+    .index("by_collaborator_occurred_at", ["authorCollaboratorId", "occurredAt"])
     .index("by_chamber_product_flavor", ["chamberId", "productId", "flavorId"])
     .index("by_request_id", ["requestId"]),
 });

@@ -9,6 +9,7 @@ const ChamberQrPage = lazy(() => import("./pages/ChamberQrPage").then((module) =
 const CollaboratorsPage = lazy(() => import("./pages/CollaboratorsPage").then((module) => ({ default: module.CollaboratorsPage })));
 const CountsPage = lazy(() => import("./pages/CountsPage").then((module) => ({ default: module.CountsPage })));
 const DashboardPage = lazy(() => import("./pages/DashboardPage").then((module) => ({ default: module.DashboardPage })));
+const HistoryPage = lazy(() => import("./pages/HistoryPage").then((module) => ({ default: module.HistoryPage })));
 const LoadsPage = lazy(() => import("./pages/LoadsPage").then((module) => ({ default: module.LoadsPage })));
 const MovementsPage = lazy(() => import("./pages/MovementsPage").then((module) => ({ default: module.MovementsPage })));
 const RegistersPage = lazy(() => import("./pages/RegistersPage").then((module) => ({ default: module.RegistersPage })));
@@ -31,6 +32,7 @@ function AdminRoutes({ integrationsReady }: { integrationsReady: boolean }) {
       <Routes>
         <Route path="/" element={<DashboardPage integrationsReady={integrationsReady} />} />
         <Route path="/estoque" element={<StockPage integrationsReady={integrationsReady} />} />
+        <Route path="/historico" element={<HistoryPage integrationsReady={integrationsReady} />} />
         <Route path="/movimentacoes" element={<MovementsPage integrationsReady={integrationsReady} />} />
         <Route path="/carregamentos" element={<LoadsPage integrationsReady={integrationsReady} />} />
         <Route path="/contagens" element={<CountsPage integrationsReady={integrationsReady} />} />

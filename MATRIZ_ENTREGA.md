@@ -9,7 +9,7 @@
 | 5. Contagem gera ajustes | Fechamento atômico reconcilia ledger | Abertura exclusiva, rascunho, prévia, fechamento atômico e ajustes vinculados publicados | Concluído |
 | 6. Dashboard em tempo real | Outro dispositivo atualiza sem recarga | Query reativa publicada e interface ligada ao Convex; teste entre dois dispositivos pendente | Em andamento |
 | 7. Estoque mínimo visual | Item abaixo do mínimo fica destacado | Configuração, consulta reativa e destaque visual publicados | Em andamento |
-| 8. Autor, data e câmara | Histórico apresenta trilha completa | Dashboard e cadeia de carregamento/retornos exibem autor, data e câmara; filtros globais pendentes | Parcial |
+| 8. Autor, data e câmara | Histórico apresenta trilha completa | Histórico paginado com período, câmara, produto, sabor, tipo, autor e detalhe de origem publicado | Concluído |
 | 9. Ledger imutável | Não existem update/delete públicos | Produção, perda e ajuste somente acrescentam movimentos; não existem funções públicas de edição ou remoção | Concluído |
 | 10. PWA de uma mão | Instalação e operação móvel | Manifest, service worker e fluxo responsivo | Parcial |
 
@@ -18,7 +18,7 @@
 | Requisito | Evidência atual |
 |---|---|
 | TypeScript estrito | npx tsc -b e npm run build |
-| Testes automatizados | 22 testes de quantidade, PIN, sessão, saldo, carregamentos, retornos e reconciliação de contagem |
+| Testes automatizados | 26 testes de quantidade, PIN, sessão, saldo, carregamentos, retornos, contagem e filtros de histórico |
 | Qualidade estática | npm run lint |
 | Offline sem falso sucesso | banner global e bloqueio reativo da confirmação |
 | Acessibilidade inicial | foco visível, semântica, estados textuais, carregamento e vazio |
@@ -30,4 +30,5 @@
 | Operação administrativa | produção, perda e ajuste com autorização no backend, saldo projetado, confirmação e recibo real |
 | Carregamentos | venda e patrocínio multi-item, transporte, idempotência, baixa atômica e cadeia de retornos |
 | Consulta de estoque | rota dedicada com saldos reativos, busca e filtros por câmara, mínimo e saldo zerado |
+| Histórico auditável | paginação por índice, filtros combináveis e detalhe da origem de carregamentos, retornos, perdas e contagens |
 | Contagem física | uma aberta por câmara, bloqueio operacional, rascunho, prévia e fechamento atômico auditável |
