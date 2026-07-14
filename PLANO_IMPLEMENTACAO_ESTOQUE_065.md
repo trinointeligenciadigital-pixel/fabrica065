@@ -10,9 +10,9 @@
 
 - Clerk e Convex configurados, comunicando-se e publicados no ambiente de desenvolvimento.
 - Rotas administrativas protegidas e sincronização do primeiro admin implementada.
-- Produtos, sabores e câmaras possuem cadastro, listagem, inativação e validação de nome duplicado.
+- Produtos, sabores e câmaras possuem cadastro, edição, listagem, inativação e validação de nome duplicado.
 - Dashboard consulta saldos, mínimos e movimentos reais de forma reativa.
-- Cadastros da Fase 2 implementados: formatos, colaboradores, permissões, QR, veículos, clientes, perdas e mínimos.
+- Cadastros da Fase 2 implementados: formatos, colaboradores, permissões, QR, veículos, clientes, perdas e mínimos; edição habilitada para equipe, frota e clientes.
 - Autenticação operacional QR + PIN, sessão de 12 horas e produção real pelo colaborador implementadas.
 - Fase 3 concluída: produção, perdas, ajustes manuais, idempotência e bloqueio atômico de saldo negativo.
 - Admin pode registrar produção diretamente em Movimentações, com as mesmas conversões e garantias do fluxo QR.
@@ -340,7 +340,7 @@ Os critérios de aceite 6, 7 e 8 do PRD são demonstrados em homologação, incl
 - Concluído: auditoria das funções públicas e confirmação de autorização administrativa ou sessão operacional.
 - Concluído: diagnóstico reativo de integridade, sem escrita, disponível para admins.
 - Concluído: link de salto ao conteúdo e auditoria Axe do acesso público.
-- Concluído: 29 testes unitários e 3 cenários E2E públicos em Chromium.
+- Concluído: 34 testes unitários e 3 cenários E2E públicos em Chromium.
 - Preparado: E2E autenticado com Clerk, ativado somente por chave secreta e conta exclusivas de teste.
 - Pendente de campo: celular real, rede 4G/Wi-Fi nas portas, cronometragem, piloto, carga real, treinamento e go-live.
 ### Estratégia de implantação

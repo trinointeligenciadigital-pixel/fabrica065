@@ -4,18 +4,13 @@ import type { MutationCtx } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
 import { requireAdmin } from "./lib/auth";
 import { hashPin } from "./lib/pin";
+import { normalizeRegisterName } from "./lib/registerEditing";
 
 const permissionValidator = v.object({
   chamberId: v.id("chambers"),
   canProduce: v.boolean(),
   canDispatch: v.boolean(),
 });
-
-function normalizeName(value: string) {
-  const name = value.trim().replace(/\s+/g, " ");
-  if (name.length < 2 || name.length > 80) throw new Error("INVALID_NAME");
-  return name;
-}
 
 async function validatePermissions(
   ctx: MutationCtx,
@@ -78,7 +73,7 @@ export const createCollaborator = mutation({
   args: { name: v.string(), pin: v.string(), permissions: v.array(permissionValidator) },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
-    const name = normalizeName(args.name);
+    const name = normalizeRegisterName(args.name);
     if ((await ctx.db.query("collaborators").collect()).some((item) => item.name.toLocaleLowerCase("pt-BR") === name.toLocaleLowerCase("pt-BR"))) {
       throw new Error("DUPLICATE_NAME");
     }
@@ -96,6 +91,49 @@ export const createCollaborator = mutation({
       await ctx.db.insert("collaboratorPermissions", { collaboratorId, ...permission, updatedAt: now });
     }
     return collaboratorId;
+  },
+});
+
+export const updateCollaborator = mutation({
+  args: {
+    collaboratorId: v.id("collaborators"),
+    name: v.string(),
+    pin: v.optional(v.string()),
+    permissions: v.array(permissionValidator),
+  },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    const current = await ctx.db.get(args.collaboratorId);
+    if (!current) throw new Error("NOT_FOUND");
+    const name = normalizeRegisterName(args.name);
+    const duplicate = (await ctx.db.query("collaborators").collect()).some(
+      (item) => item._id !== args.collaboratorId && item.name.toLocaleLowerCase("pt-BR") === name.toLocaleLowerCase("pt-BR"),
+    );
+    if (duplicate) throw new Error("DUPLICATE_NAME");
+    await validatePermissions(ctx, args.permissions);
+
+    const now = Date.now();
+    const existing = await ctx.db.query("collaboratorPermissions")
+      .withIndex("by_collaborator", (query) => query.eq("collaboratorId", args.collaboratorId))
+      .collect();
+    for (const item of existing) await ctx.db.delete(item._id);
+    for (const permission of args.permissions) {
+      await ctx.db.insert("collaboratorPermissions", { collaboratorId: args.collaboratorId, ...permission, updatedAt: now });
+    }
+
+    await ctx.db.patch(args.collaboratorId, {
+      name,
+      ...(args.pin ? { pinHash: await hashPin(args.pin), invalidAttempts: 0, blockedUntil: undefined } : {}),
+      updatedAt: now,
+    });
+    if (args.pin) {
+      const sessions = await ctx.db.query("operatorSessions")
+        .withIndex("by_collaborator", (query) => query.eq("collaboratorId", args.collaboratorId))
+        .collect();
+      for (const session of sessions) {
+        if (!session.revokedAt) await ctx.db.patch(session._id, { revokedAt: now });
+      }
+    }
   },
 });
 

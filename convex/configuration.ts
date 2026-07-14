@@ -1,12 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { requireAdmin } from "./lib/auth";
-
-function normalizeName(value: string) {
-  const name = value.trim().replace(/\s+/g, " ");
-  if (name.length < 2 || name.length > 80) throw new Error("INVALID_NAME");
-  return name;
-}
+import { normalizeOptionalDocument, normalizeRegisterName, normalizeVehiclePlate } from "./lib/registerEditing";
 
 function assertPositiveInteger(value: number, code = "INVALID_QUANTITY") {
   if (!Number.isSafeInteger(value) || value <= 0) throw new Error(code);
@@ -37,7 +32,7 @@ export const createPackageFormat = mutation({
     const product = await ctx.db.get(args.productId);
     if (!product?.active) throw new Error("INACTIVE_REFERENCE");
     if (product.baseUnit !== "grama") throw new Error("FORMAT_NOT_ALLOWED");
-    const name = normalizeName(args.name);
+    const name = normalizeRegisterName(args.name);
     assertPositiveInteger(args.gramsPerPackage, "INVALID_WEIGHT");
     const duplicate = (await ctx.db.query("packageFormats").collect()).some(
       (item) => item.productId === args.productId && item.name.toLocaleLowerCase("pt-BR") === name.toLocaleLowerCase("pt-BR"),
@@ -69,12 +64,24 @@ export const createVehicle = mutation({
   args: { plate: v.string(), description: v.string() },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
-    const plate = args.plate.toUpperCase().replace(/[^A-Z0-9]/g, "");
-    if (!/^[A-Z]{3}[0-9][A-Z0-9][0-9]{2}$/.test(plate)) throw new Error("INVALID_PLATE");
-    const description = normalizeName(args.description);
+    const plate = normalizeVehiclePlate(args.plate);
+    const description = normalizeRegisterName(args.description);
     if ((await ctx.db.query("vehicles").collect()).some((item) => item.plate === plate)) throw new Error("DUPLICATE_PLATE");
     const now = Date.now();
     return await ctx.db.insert("vehicles", { plate, description, active: true, createdAt: now, updatedAt: now });
+  },
+});
+
+export const updateVehicle = mutation({
+  args: { id: v.id("vehicles"), plate: v.string(), description: v.string() },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    if (!(await ctx.db.get(args.id))) throw new Error("NOT_FOUND");
+    const plate = normalizeVehiclePlate(args.plate);
+    const description = normalizeRegisterName(args.description);
+    const duplicate = (await ctx.db.query("vehicles").collect()).some((item) => item._id !== args.id && item.plate === plate);
+    if (duplicate) throw new Error("DUPLICATE_PLATE");
+    await ctx.db.patch(args.id, { plate, description, updatedAt: Date.now() });
   },
 });
 
@@ -99,14 +106,28 @@ export const createCustomer = mutation({
   args: { name: v.string(), document: v.optional(v.string()) },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
-    const name = normalizeName(args.name);
-    const document = args.document?.trim().replace(/\s+/g, " ") || undefined;
-    if (document && document.length > 30) throw new Error("INVALID_DOCUMENT");
+    const name = normalizeRegisterName(args.name);
+    const document = normalizeOptionalDocument(args.document);
     if ((await ctx.db.query("customers").collect()).some((item) => item.name.toLocaleLowerCase("pt-BR") === name.toLocaleLowerCase("pt-BR"))) {
       throw new Error("DUPLICATE_NAME");
     }
     const now = Date.now();
     return await ctx.db.insert("customers", { name, document, active: true, createdAt: now, updatedAt: now });
+  },
+});
+
+export const updateCustomer = mutation({
+  args: { id: v.id("customers"), name: v.string(), document: v.optional(v.string()) },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    if (!(await ctx.db.get(args.id))) throw new Error("NOT_FOUND");
+    const name = normalizeRegisterName(args.name);
+    const document = normalizeOptionalDocument(args.document);
+    const duplicate = (await ctx.db.query("customers").collect()).some(
+      (item) => item._id !== args.id && item.name.toLocaleLowerCase("pt-BR") === name.toLocaleLowerCase("pt-BR"),
+    );
+    if (duplicate) throw new Error("DUPLICATE_NAME");
+    await ctx.db.patch(args.id, { name, document, updatedAt: Date.now() });
   },
 });
 
@@ -131,7 +152,7 @@ export const createLossReason = mutation({
   args: { name: v.string() },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
-    const name = normalizeName(args.name);
+    const name = normalizeRegisterName(args.name);
     if ((await ctx.db.query("lossReasons").collect()).some((item) => item.name.toLocaleLowerCase("pt-BR") === name.toLocaleLowerCase("pt-BR"))) {
       throw new Error("DUPLICATE_NAME");
     }

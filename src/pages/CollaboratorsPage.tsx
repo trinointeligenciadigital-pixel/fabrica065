@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "convex/react";
-import { ArchiveRestore, KeyRound, Save, ShieldCheck, UserPlus, UsersRound } from "lucide-react";
+import { ArchiveRestore, KeyRound, Pencil, Save, UserPlus, UsersRound } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
@@ -14,6 +14,8 @@ type PermissionDraft = Record<string, { canProduce: boolean; canDispatch: boolea
 function collaboratorMessage(error: unknown) {
   const text = error instanceof Error ? error.message : String(error);
   if (text.includes("DUPLICATE_NAME")) return "Já existe um colaborador com esse nome.";
+  if (text.includes("INVALID_NAME")) return "Informe um nome entre 2 e 80 caracteres.";
+  if (text.includes("NOT_FOUND")) return "Este colaborador não existe mais. Atualize a página.";
   if (text.includes("INVALID_PIN")) return "O PIN deve ter de 4 a 6 números.";
   if (text.includes("PERMISSION_REQUIRED")) return "Marque ao menos uma permissão em uma câmara.";
   if (text.includes("INACTIVE_REFERENCE")) return "Uma das câmaras selecionadas foi inativada.";
@@ -67,8 +69,7 @@ function ConnectedCollaborators() {
   const collaborators = useQuery(api.collaborators.listCollaborators);
   const chambers = useQuery(api.collaborators.permissionOptions);
   const create = useMutation(api.collaborators.createCollaborator);
-  const updatePermissions = useMutation(api.collaborators.updatePermissions);
-  const resetPin = useMutation(api.collaborators.resetPin);
+  const updateCollaborator = useMutation(api.collaborators.updateCollaborator);
   const setActive = useMutation(api.collaborators.setCollaboratorActive);
   const [name, setName] = useState("");
   const [pin, setPin] = useState("");
@@ -76,6 +77,7 @@ function ConnectedCollaborators() {
   const [feedback, setFeedback] = useState("");
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState<Id<"collaborators">>();
+  const [editName, setEditName] = useState("");
   const [editDraft, setEditDraft] = useState<PermissionDraft>({});
   const [newPin, setNewPin] = useState("");
 
@@ -102,6 +104,7 @@ function ConnectedCollaborators() {
       next[permission.chamberId] = { canProduce: permission.canProduce, canDispatch: permission.canDispatch };
     }
     setEditingId(collaborator._id);
+    setEditName(collaborator.name);
     setEditDraft(next);
     setNewPin("");
     setFeedback("");
@@ -112,11 +115,10 @@ function ConnectedCollaborators() {
     setSaving(true);
     setFeedback("");
     try {
-      await updatePermissions({ collaboratorId: editingId, permissions: toPermissions(editDraft) });
-      if (newPin) await resetPin({ collaboratorId: editingId, pin: newPin });
+      await updateCollaborator({ collaboratorId: editingId, name: editName, pin: newPin || undefined, permissions: toPermissions(editDraft) });
       setEditingId(undefined);
       setNewPin("");
-      setFeedback("Permissões atualizadas. Sessões foram revogadas se o PIN mudou.");
+      setFeedback("Colaborador atualizado. Sessões foram revogadas se o PIN mudou.");
     } catch (error) {
       setFeedback(collaboratorMessage(error));
     } finally {
@@ -166,7 +168,7 @@ function ConnectedCollaborators() {
                   {collaborator.permissions.map((permission) => <span key={permission.chamberId}><b>{permission.chamberName}</b>{permission.canProduce && " · produção"}{permission.canDispatch && " · saídas"}</span>)}
                 </div>
                 <div className="member-actions">
-                  <button className="row-action" onClick={() => startEditing(collaborator)}><ShieldCheck size={15} />Configurar</button>
+                  <button className="row-action" onClick={() => startEditing(collaborator)}><Pencil size={15} />Editar</button>
                   <button className="row-action" onClick={() => void setActive({ id: collaborator._id, active: !collaborator.active })}><ArchiveRestore size={15} />{collaborator.active ? "Inativar" : "Reativar"}</button>
                 </div>
               </article>
@@ -176,10 +178,11 @@ function ConnectedCollaborators() {
 
         {editing && (
           <div className="permission-editor">
-            <div className="permission-editor-heading"><div><p>Editando acesso</p><h3>{editing.name}</h3></div><button className="text-button" onClick={() => setEditingId(undefined)}>Cancelar</button></div>
+            <div className="permission-editor-heading"><div><p>Editando colaborador</p><h3>{editing.name}</h3></div><button className="text-button" onClick={() => setEditingId(undefined)}>Cancelar</button></div>
+            <label className="field collaborator-name-edit"><span>Nome completo</span><input autoFocus value={editName} onChange={(event) => setEditName(event.target.value)} minLength={2} maxLength={80} required /></label>
             <PermissionGrid chambers={chambers} draft={editDraft} onChange={setEditDraft} prefix="edit" />
             <label className="field reset-pin"><span>Novo PIN (opcional)</span><div><KeyRound size={17} /><input type="password" inputMode="numeric" pattern="[0-9]{4,6}" minLength={4} maxLength={6} value={newPin} onChange={(event) => setNewPin(event.target.value.replace(/\D/g, ""))} placeholder="Deixe vazio para manter" /></div></label>
-            <button className="button button-primary" disabled={saving} onClick={() => void saveEditing()}><Save size={18} />Salvar acesso</button>
+            <button className="button button-primary" disabled={saving} onClick={() => void saveEditing()}><Save size={18} />Salvar alterações</button>
           </div>
         )}
       </section>

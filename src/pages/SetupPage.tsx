@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "convex/react";
-import { ArchiveRestore, Building2, PackageOpen, Plus, Scale, Tag, Trash2, Truck } from "lucide-react";
+import { ArchiveRestore, Building2, PackageOpen, Pencil, Plus, Save, Scale, Tag, Trash2, Truck, X } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { api } from "../../convex/_generated/api";
@@ -31,6 +31,8 @@ function messageFor(error: unknown) {
   if (text.includes("FORMAT_NOT_ALLOWED")) return "Formatos em kg são usados apenas em produtos de cubo ou escamado.";
   if (text.includes("FLAVOR_REQUIRED")) return "Selecione o sabor para este produto.";
   if (text.includes("INVALID_NAME")) return "Informe um nome entre 2 e 80 caracteres.";
+  if (text.includes("INVALID_DOCUMENT")) return "O documento deve ter no máximo 30 caracteres.";
+  if (text.includes("NOT_FOUND")) return "Este cadastro não existe mais. Atualize a página.";
   return "Não foi possível salvar. Tente novamente.";
 }
 
@@ -109,9 +111,11 @@ function FormatsPanel() {
 function VehiclesPanel() {
   const items = useQuery(api.configuration.listVehicles);
   const create = useMutation(api.configuration.createVehicle);
+  const update = useMutation(api.configuration.updateVehicle);
   const toggle = useMutation(api.configuration.setVehicleActive);
   const [plate, setPlate] = useState("");
   const [description, setDescription] = useState("");
+  const [editing, setEditing] = useState<{ id: Id<"vehicles">; plate: string; description: string }>();
   const [feedback, setFeedback] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -121,17 +125,37 @@ function VehiclesPanel() {
     catch (error) { setFeedback(messageFor(error)); } finally { setSaving(false); }
   }
 
+  async function saveEdit(event: FormEvent) {
+    event.preventDefault(); if (!editing) return; setSaving(true); setFeedback("");
+    try { await update(editing); setEditing(undefined); setFeedback("Veículo atualizado com sucesso."); }
+    catch (error) { setFeedback(messageFor(error)); } finally { setSaving(false); }
+  }
+
+  async function toggleItem(id: Id<"vehicles">, active: boolean) {
+    setFeedback("");
+    try { await toggle({ id, active }); setFeedback(active ? "Veículo reativado." : "Veículo inativado."); }
+    catch (error) { setFeedback(messageFor(error)); }
+  }
+
   return (
     <>
       <form className="register-form register-form-simple entity-form" onSubmit={submit}>
         <label className="field"><span>Placa</span><input value={plate} onChange={(event) => setPlate(event.target.value.toUpperCase())} placeholder="ABC1D23" maxLength={8} required /></label>
-        <label className="field"><span>Descrição</span><input value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Ex.: Caminhão baú" required /></label>
-        <button className="button button-primary" disabled={saving}><Plus size={18} />Cadastrar</button>
+        <label className="field"><span>Descrição</span><input value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Ex.: Caminhão baú" minLength={2} maxLength={80} required /></label>
+        <button className="button button-primary" disabled={saving}><Plus size={18} />{saving ? "Salvando…" : "Cadastrar"}</button>
       </form>
       <p className="form-feedback" aria-live="polite">{feedback}</p>
+      {editing && (
+        <form className="register-editor" onSubmit={saveEdit}>
+          <div className="register-editor-heading"><div><span>Editando veículo</span><strong>{editing.plate}</strong></div><button className="icon-button" type="button" onClick={() => setEditing(undefined)} aria-label="Cancelar edição"><X size={17} /></button></div>
+          <label className="field"><span>Placa</span><input autoFocus value={editing.plate} onChange={(event) => setEditing({ ...editing, plate: event.target.value.toUpperCase() })} maxLength={8} required /></label>
+          <label className="field"><span>Descrição</span><input value={editing.description} onChange={(event) => setEditing({ ...editing, description: event.target.value })} minLength={2} maxLength={80} required /></label>
+          <div className="register-editor-actions"><button className="button button-secondary" type="button" onClick={() => setEditing(undefined)}>Cancelar</button><button className="button button-primary" disabled={saving}><Save size={17} />{saving ? "Salvando…" : "Salvar alterações"}</button></div>
+        </form>
+      )}
       {items === undefined ? <LoadingRows /> : items.length === 0 ? <EmptyRows text="Cadastre o primeiro veículo próprio." /> : (
-        <div className="table-wrap"><table><thead><tr><th>Placa</th><th>Descrição</th><th>Situação</th><th className="table-action">Ação</th></tr></thead><tbody>
-          {items.map((item) => <tr key={item._id}><td className="data-number"><strong>{item.plate}</strong></td><td>{item.description}</td><td><Status active={item.active} /></td><td className="table-action"><button className="row-action" onClick={() => void toggle({ id: item._id, active: !item.active })}><ArchiveRestore size={15} />{item.active ? "Inativar" : "Reativar"}</button></td></tr>)}
+        <div className="table-wrap"><table><thead><tr><th>Placa</th><th>Descrição</th><th>Situação</th><th className="table-action">Ações</th></tr></thead><tbody>
+          {items.map((item) => <tr key={item._id}><td className="data-number"><strong>{item.plate}</strong></td><td>{item.description}</td><td><Status active={item.active} /></td><td className="table-action"><div className="row-actions"><button className="row-action" onClick={() => { setEditing({ id: item._id, plate: item.plate, description: item.description }); setFeedback(""); }}><Pencil size={15} />Editar</button><button className="row-action" onClick={() => void toggleItem(item._id, !item.active)}><ArchiveRestore size={15} />{item.active ? "Inativar" : "Reativar"}</button></div></td></tr>)}
         </tbody></table></div>
       )}
     </>
@@ -141,28 +165,51 @@ function VehiclesPanel() {
 function CustomersPanel() {
   const items = useQuery(api.configuration.listCustomers);
   const create = useMutation(api.configuration.createCustomer);
+  const update = useMutation(api.configuration.updateCustomer);
   const toggle = useMutation(api.configuration.setCustomerActive);
   const [name, setName] = useState("");
   const [document, setDocument] = useState("");
+  const [editing, setEditing] = useState<{ id: Id<"customers">; name: string; document: string }>();
   const [feedback, setFeedback] = useState("");
+  const [saving, setSaving] = useState(false);
 
   async function submit(event: FormEvent) {
-    event.preventDefault(); setFeedback("");
+    event.preventDefault(); setSaving(true); setFeedback("");
     try { await create({ name, document: document || undefined }); setName(""); setDocument(""); setFeedback("Cliente cadastrado."); }
+    catch (error) { setFeedback(messageFor(error)); } finally { setSaving(false); }
+  }
+
+  async function saveEdit(event: FormEvent) {
+    event.preventDefault(); if (!editing) return; setSaving(true); setFeedback("");
+    try { await update({ ...editing, document: editing.document || undefined }); setEditing(undefined); setFeedback("Cliente atualizado com sucesso."); }
+    catch (error) { setFeedback(messageFor(error)); } finally { setSaving(false); }
+  }
+
+  async function toggleItem(id: Id<"customers">, active: boolean) {
+    setFeedback("");
+    try { await toggle({ id, active }); setFeedback(active ? "Cliente reativado." : "Cliente inativado."); }
     catch (error) { setFeedback(messageFor(error)); }
   }
 
   return (
     <>
       <form className="register-form register-form-simple entity-form" onSubmit={submit}>
-        <label className="field"><span>Nome</span><input value={name} onChange={(event) => setName(event.target.value)} placeholder="Nome ou razão social" required /></label>
-        <label className="field"><span>Documento (opcional)</span><input value={document} onChange={(event) => setDocument(event.target.value)} placeholder="CPF ou CNPJ" /></label>
-        <button className="button button-primary"><Plus size={18} />Cadastrar</button>
+        <label className="field"><span>Nome</span><input value={name} onChange={(event) => setName(event.target.value)} placeholder="Nome ou razão social" minLength={2} maxLength={80} required /></label>
+        <label className="field"><span>Documento (opcional)</span><input value={document} onChange={(event) => setDocument(event.target.value)} placeholder="CPF ou CNPJ" maxLength={30} /></label>
+        <button className="button button-primary" disabled={saving}><Plus size={18} />{saving ? "Salvando…" : "Cadastrar"}</button>
       </form>
       <p className="form-feedback" aria-live="polite">{feedback}</p>
+      {editing && (
+        <form className="register-editor" onSubmit={saveEdit}>
+          <div className="register-editor-heading"><div><span>Editando cliente</span><strong>{editing.name}</strong></div><button className="icon-button" type="button" onClick={() => setEditing(undefined)} aria-label="Cancelar edição"><X size={17} /></button></div>
+          <label className="field"><span>Nome ou razão social</span><input autoFocus value={editing.name} onChange={(event) => setEditing({ ...editing, name: event.target.value })} minLength={2} maxLength={80} required /></label>
+          <label className="field"><span>Documento (opcional)</span><input value={editing.document} onChange={(event) => setEditing({ ...editing, document: event.target.value })} maxLength={30} /></label>
+          <div className="register-editor-actions"><button className="button button-secondary" type="button" onClick={() => setEditing(undefined)}>Cancelar</button><button className="button button-primary" disabled={saving}><Save size={17} />{saving ? "Salvando…" : "Salvar alterações"}</button></div>
+        </form>
+      )}
       {items === undefined ? <LoadingRows /> : items.length === 0 ? <EmptyRows text="Cadastre o primeiro cliente ou parceiro." /> : (
-        <div className="table-wrap"><table><thead><tr><th>Cliente</th><th>Documento</th><th>Situação</th><th className="table-action">Ação</th></tr></thead><tbody>
-          {items.map((item) => <tr key={item._id}><td><strong>{item.name}</strong></td><td className="muted-cell">{item.document ?? "Não informado"}</td><td><Status active={item.active} /></td><td className="table-action"><button className="row-action" onClick={() => void toggle({ id: item._id, active: !item.active })}><ArchiveRestore size={15} />{item.active ? "Inativar" : "Reativar"}</button></td></tr>)}
+        <div className="table-wrap"><table><thead><tr><th>Cliente</th><th>Documento</th><th>Situação</th><th className="table-action">Ações</th></tr></thead><tbody>
+          {items.map((item) => <tr key={item._id}><td><strong>{item.name}</strong></td><td className="muted-cell">{item.document ?? "Não informado"}</td><td><Status active={item.active} /></td><td className="table-action"><div className="row-actions"><button className="row-action" onClick={() => { setEditing({ id: item._id, name: item.name, document: item.document ?? "" }); setFeedback(""); }}><Pencil size={15} />Editar</button><button className="row-action" onClick={() => void toggleItem(item._id, !item.active)}><ArchiveRestore size={15} />{item.active ? "Inativar" : "Reativar"}</button></div></td></tr>)}
         </tbody></table></div>
       )}
     </>

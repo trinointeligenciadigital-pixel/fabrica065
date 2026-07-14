@@ -976,3 +976,30 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .diagnostic-check { grid-template-columns: 36px minmax(0, 1fr); padding-inline: 14px; }
   .diagnostic-check > .button { grid-column: 2; justify-self: start; }
 }
+
+/* Edição consistente de cadastros */
+.register-editor {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  align-items: end;
+  gap: 14px;
+  margin: 0 20px 18px;
+  padding: 16px;
+  border: 1px solid #9fc6d0;
+  border-radius: var(--radius);
+  background: #f3f9fa;
+}
+.register-editor-simple { grid-template-columns: minmax(240px, 1fr); max-width: 720px; }
+.register-editor-heading { grid-column: 1 / -1; min-width: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding-bottom: 12px; border-bottom: 1px solid #c9dfe4; }
+.register-editor-heading > div { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.register-editor-heading span { color: var(--primary-dark); font-size: 11px; font-weight: 700; }
+.register-editor-heading strong { overflow-wrap: anywhere; font-size: 15px; }
+.register-editor-hint { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: 11px; line-height: 17px; }
+.register-editor-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 9px; padding-top: 2px; }
+.collaborator-name-edit { margin-bottom: 16px; }
+
+@media (max-width: 767px) {
+  .register-editor, .register-editor-simple { grid-template-columns: 1fr; margin-inline: 12px; padding: 14px; }
+  .register-editor-actions { display: grid; grid-template-columns: 1fr; }
+  .register-editor-actions .button { width: 100%; }
+}

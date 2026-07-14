@@ -2,23 +2,19 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import type { MutationCtx } from "./_generated/server";
 import { requireAdmin } from "./lib/auth";
+import { assertProductUnitChangeAllowed, normalizeRegisterName } from "./lib/registerEditing";
 
 const productKind = v.union(v.literal("saborizado"), v.literal("cubo"), v.literal("escamado"));
-
-function normalizeName(value: string) {
-  const name = value.trim().replace(/\s+/g, " ");
-  if (name.length < 2 || name.length > 80) throw new Error("INVALID_NAME");
-  return name;
-}
 
 async function assertUniqueName(
   ctx: MutationCtx,
   table: "products" | "flavors" | "chambers",
   name: string,
+  excludeId?: string,
 ) {
   const normalized = name.toLocaleLowerCase("pt-BR");
   const existing = await ctx.db.query(table).collect();
-  if (existing.some((item) => item.name.toLocaleLowerCase("pt-BR") === normalized)) {
+  if (existing.some((item) => String(item._id) !== excludeId && item.name.toLocaleLowerCase("pt-BR") === normalized)) {
     throw new Error("DUPLICATE_NAME");
   }
 }
@@ -35,7 +31,7 @@ export const createProduct = mutation({
   args: { name: v.string(), kind: productKind },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
-    const name = normalizeName(args.name);
+    const name = normalizeRegisterName(args.name);
     await assertUniqueName(ctx, "products", name);
     const now = Date.now();
     return await ctx.db.insert("products", {
@@ -46,6 +42,34 @@ export const createProduct = mutation({
       createdAt: now,
       updatedAt: now,
     });
+  },
+});
+
+export const updateProduct = mutation({
+  args: { id: v.id("products"), name: v.string(), kind: productKind },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    const current = await ctx.db.get(args.id);
+    if (!current) throw new Error("NOT_FOUND");
+    const name = normalizeRegisterName(args.name);
+    await assertUniqueName(ctx, "products", name, String(args.id));
+    const nextUnit = args.kind === "saborizado" ? "pacote" as const : "grama" as const;
+    if (current.baseUnit !== nextUnit) {
+      const [movements, formats, minimums, loadItems, countItems] = await Promise.all([
+        ctx.db.query("movements").withIndex("by_product_occurred_at", (index) => index.eq("productId", args.id)).take(1),
+        ctx.db.query("packageFormats").collect(),
+        ctx.db.query("stockMinimums").collect(),
+        ctx.db.query("loadItems").collect(),
+        ctx.db.query("physicalCountItems").collect(),
+      ]);
+      const hasDependencies = movements.length > 0 ||
+        formats.some((item) => item.productId === args.id) ||
+        minimums.some((item) => item.productId === args.id) ||
+        loadItems.some((item) => item.productId === args.id) ||
+        countItems.some((item) => item.productId === args.id);
+      assertProductUnitChangeAllowed(current.baseUnit, nextUnit, hasDependencies);
+    }
+    await ctx.db.patch(args.id, { name, kind: args.kind, baseUnit: nextUnit, updatedAt: Date.now() });
   },
 });
 
@@ -71,10 +95,21 @@ export const createFlavor = mutation({
   args: { name: v.string() },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
-    const name = normalizeName(args.name);
+    const name = normalizeRegisterName(args.name);
     await assertUniqueName(ctx, "flavors", name);
     const now = Date.now();
     return await ctx.db.insert("flavors", { name, active: true, createdAt: now, updatedAt: now });
+  },
+});
+
+export const updateFlavor = mutation({
+  args: { id: v.id("flavors"), name: v.string() },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    if (!(await ctx.db.get(args.id))) throw new Error("NOT_FOUND");
+    const name = normalizeRegisterName(args.name);
+    await assertUniqueName(ctx, "flavors", name, String(args.id));
+    await ctx.db.patch(args.id, { name, updatedAt: Date.now() });
   },
 });
 
@@ -100,7 +135,7 @@ export const createChamber = mutation({
   args: { name: v.string() },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
-    const name = normalizeName(args.name);
+    const name = normalizeRegisterName(args.name);
     await assertUniqueName(ctx, "chambers", name);
     const now = Date.now();
     return await ctx.db.insert("chambers", {
@@ -110,6 +145,17 @@ export const createChamber = mutation({
       createdAt: now,
       updatedAt: now,
     });
+  },
+});
+
+export const updateChamber = mutation({
+  args: { id: v.id("chambers"), name: v.string() },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    if (!(await ctx.db.get(args.id))) throw new Error("NOT_FOUND");
+    const name = normalizeRegisterName(args.name);
+    await assertUniqueName(ctx, "chambers", name, String(args.id));
+    await ctx.db.patch(args.id, { name, updatedAt: Date.now() });
   },
 });
 
