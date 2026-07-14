@@ -148,7 +148,7 @@ function DashboardContent({ data, integrationsReady }: { data: DashboardData; in
       <section className="content-section">
         <div className="section-heading">
           <div><h2>Saldos atuais</h2><p>Unidades compatíveis aparecem sem conversão ambígua.</p></div>
-          <button className="text-button">Ver estoque completo <ArrowRight size={16} /></button>
+          <Link className="text-button" to="/estoque">Ver estoque completo <ArrowRight size={16} /></Link>
         </div>
         {data.balances.length === 0 ? (
           <div className="empty-state dashboard-empty">

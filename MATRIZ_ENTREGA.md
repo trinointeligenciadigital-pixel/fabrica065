@@ -29,4 +29,5 @@
 | Operação por QR | produção e perda com permissão no backend, conversão por formato, idempotência, confirmação e recibo real |
 | Operação administrativa | produção, perda e ajuste com autorização no backend, saldo projetado, confirmação e recibo real |
 | Carregamentos | venda e patrocínio multi-item, transporte, idempotência, baixa atômica e cadeia de retornos |
+| Consulta de estoque | rota dedicada com saldos reativos, busca e filtros por câmara, mínimo e saldo zerado |
 | Contagem física | uma aberta por câmara, bloqueio operacional, rascunho, prévia e fechamento atômico auditável |

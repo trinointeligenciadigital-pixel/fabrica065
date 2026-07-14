@@ -746,3 +746,77 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .count-receipt-stats > div { border-right: 0; border-bottom: 1px solid var(--line); }
   .count-receipt-stats > div:last-child { border-bottom: 0; }
 }
+/* Consulta completa de estoque */
+.stock-page-heading { margin-bottom: 18px; }
+.stock-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 18px; }
+.stock-summary > button { min-height: 76px; display: grid; grid-template-columns: 38px 1fr; align-items: center; gap: 11px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--ink); text-align: left; cursor: pointer; box-shadow: 0 3px 13px rgba(35,57,63,.035); }
+.stock-summary > button:hover { border-color: #a9c0c5; transform: translateY(-1px); }
+.stock-summary > button.is-active { border-color: #80aab2; box-shadow: inset 0 -3px 0 var(--primary); }
+.stock-summary-icon { width: 37px; height: 37px; display: grid; place-items: center; border-radius: 9px; }
+.stock-summary-icon.is-total { background: var(--primary-soft); color: var(--primary-dark); }
+.stock-summary-icon.is-regular { background: var(--success-soft); color: var(--success); }
+.stock-summary-icon.is-low { background: var(--warning-soft); color: #8a5e0d; }
+.stock-summary-icon.is-zero { background: var(--danger-soft); color: #9b2f37; }
+.stock-summary > button > span:last-child { display: flex; flex-direction: column; gap: 3px; }
+.stock-summary strong { font: 650 20px/1 "IBM Plex Mono", monospace; }
+.stock-summary small { color: var(--muted); font-size: 10px; }
+.stock-section { overflow: visible; }
+.stock-filter-bar { display: grid; grid-template-columns: minmax(260px, 1fr) 210px 190px; gap: 12px; padding: 17px 18px; border-bottom: 1px solid var(--line); }
+.stock-search { min-height: 42px; display: flex; align-items: center; gap: 9px; padding: 0 12px; border: 1px solid var(--line-strong); border-radius: 8px; background: #fff; color: var(--muted); }
+.stock-search:focus-within { border-color: var(--primary); box-shadow: var(--focus); }
+.stock-search input { width: 100%; border: 0; outline: 0; background: transparent; color: var(--ink); font: inherit; }
+.stock-search input::placeholder { color: #91a1a6; }
+.stock-select { min-width: 0; display: flex; align-items: center; gap: 8px; padding: 0 10px; border: 1px solid var(--line-strong); border-radius: 8px; background: #fff; }
+.stock-select > span { color: var(--muted); font-size: 10px; font-weight: 680; white-space: nowrap; }
+.stock-select select { min-width: 0; flex: 1; height: 40px; padding: 0 24px 0 4px; border: 0; outline: 0; background-color: transparent; color: var(--ink); font-size: 11px; }
+.stock-select:focus-within { border-color: var(--primary); box-shadow: var(--focus); }
+.stock-result-line { min-height: 45px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 18px; border-bottom: 1px solid var(--line); background: var(--surface-subtle); font-size: 10px; }
+.stock-result-line strong { font-weight: 720; }
+.stock-result-line span { color: var(--muted); }
+.stock-list { display: flex; flex-direction: column; }
+.stock-row { position: relative; min-height: 76px; display: grid; grid-template-columns: minmax(135px, .75fr) minmax(190px, 1.3fr) minmax(130px, .75fr) minmax(130px, .75fr) 120px; align-items: center; gap: 17px; padding: 12px 18px 12px 21px; border-bottom: 1px solid var(--line); }
+.stock-row:last-child { border-bottom: 0; }
+.stock-row::before { content: ""; position: absolute; inset: 13px auto 13px 0; width: 3px; border-radius: 0 3px 3px 0; background: #a8c3c8; }
+.stock-row.is-low::before { background: var(--warning); }
+.stock-row.is-zero::before { background: var(--danger); }
+.stock-row:hover { background: #fafcfc; }
+.stock-chamber { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.stock-chamber > span { width: 28px; height: 28px; display: grid; flex: 0 0 auto; place-items: center; border-radius: 7px; background: var(--primary-soft); color: var(--primary-dark); }
+.stock-chamber strong { overflow: hidden; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.stock-product { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.stock-product strong { overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.stock-product span { overflow: hidden; color: var(--muted); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.stock-number { display: flex; flex-direction: column; gap: 5px; text-align: right; }
+.stock-number small { color: var(--muted); font-size: 9px; font-weight: 650; letter-spacing: .045em; text-transform: uppercase; }
+.stock-number strong { font: 650 13px/1.2 "IBM Plex Mono", monospace; }
+.stock-number > span { color: var(--muted); font: 500 11px/1.2 "IBM Plex Mono", monospace; }
+.stock-state { justify-self: end; padding: 6px 8px; border-radius: 999px; font-size: 9px; font-weight: 720; white-space: nowrap; }
+.stock-state.is-regular { background: var(--success-soft); color: var(--success); }
+.stock-state.is-low { background: var(--warning-soft); color: #80580e; }
+.stock-state.is-zero { background: var(--danger-soft); color: #982b33; }
+.stock-empty { min-height: 310px; }
+
+@media (max-width: 960px) {
+  .stock-summary { grid-template-columns: repeat(2, 1fr); }
+  .stock-filter-bar { grid-template-columns: 1fr 1fr; }
+  .stock-search { grid-column: 1 / -1; }
+  .stock-row { grid-template-columns: minmax(130px, .7fr) minmax(180px, 1.2fr) minmax(120px, .7fr) 115px; }
+  .stock-row .stock-number:nth-of-type(4) { display: none; }
+}
+
+@media (max-width: 767px) {
+  .stock-summary { gap: 7px; }
+  .stock-summary > button { min-height: 68px; grid-template-columns: 32px 1fr; gap: 8px; padding: 10px; }
+  .stock-summary-icon { width: 32px; height: 32px; }
+  .stock-summary strong { font-size: 17px; }
+  .stock-filter-bar { grid-template-columns: 1fr; padding: 13px; }
+  .stock-search { grid-column: auto; }
+  .stock-select { min-height: 42px; }
+  .stock-result-line { padding-inline: 13px; }
+  .stock-row { grid-template-columns: 1fr auto; gap: 10px 14px; padding: 14px 13px 14px 17px; }
+  .stock-chamber { grid-column: 1 / -1; }
+  .stock-product { grid-column: 1; }
+  .stock-number { grid-column: 2; grid-row: 2; }
+  .stock-row .stock-number:nth-of-type(4) { display: none; }
+  .stock-state { grid-column: 1 / -1; justify-self: start; }
+}

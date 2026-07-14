@@ -13,6 +13,7 @@ const LoadsPage = lazy(() => import("./pages/LoadsPage").then((module) => ({ def
 const MovementsPage = lazy(() => import("./pages/MovementsPage").then((module) => ({ default: module.MovementsPage })));
 const RegistersPage = lazy(() => import("./pages/RegistersPage").then((module) => ({ default: module.RegistersPage })));
 const SetupPage = lazy(() => import("./pages/SetupPage").then((module) => ({ default: module.SetupPage })));
+const StockPage = lazy(() => import("./pages/StockPage").then((module) => ({ default: module.StockPage })));
 
 interface AdminAppProps {
   integrationsReady: boolean;
@@ -29,6 +30,7 @@ function AdminRoutes({ integrationsReady }: { integrationsReady: boolean }) {
     <Suspense fallback={<RouteLoading />}>
       <Routes>
         <Route path="/" element={<DashboardPage integrationsReady={integrationsReady} />} />
+        <Route path="/estoque" element={<StockPage integrationsReady={integrationsReady} />} />
         <Route path="/movimentacoes" element={<MovementsPage integrationsReady={integrationsReady} />} />
         <Route path="/carregamentos" element={<LoadsPage integrationsReady={integrationsReady} />} />
         <Route path="/contagens" element={<CountsPage integrationsReady={integrationsReady} />} />

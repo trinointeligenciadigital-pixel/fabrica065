@@ -15,6 +15,7 @@ A fundação técnica está ativa no ambiente de desenvolvimento:
 - configuração de estoque mínimo por câmara, produto e sabor;
 - token operacional não sequencial e QR imprimível gerados para cada câmara;
 - dashboard reativo ligado aos saldos, mínimos e movimentos reais;
+- módulo de estoque em `/estoque`, com busca e filtros por câmara e situação do saldo;
 - fluxo móvel real: QR, identificação, PIN, sessão de 12 horas e produção persistida;
 - produção append-only para admin e colaborador, com autor, câmara, horário e idempotência definidos no backend;
 - lançamento administrativo de produção em `/movimentacoes`, com conversão por formato, saldo projetado, revisão e recibo;
