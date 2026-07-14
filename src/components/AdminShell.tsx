@@ -3,14 +3,11 @@ import {
   ClipboardCheck,
   History,
   LayoutDashboard,
-  PackagePlus,
   ScrollText,
   Settings2,
   ShieldCheck,
   Snowflake,
   Truck,
-  UsersRound,
-  Warehouse,
 } from "lucide-react";
 import { Show, SignInButton, UserButton } from "@clerk/react";
 import { Link, NavLink } from "react-router-dom";
@@ -32,10 +29,7 @@ const navItems = [
 ];
 
 const registerItems = [
-  { label: "Produtos", icon: PackagePlus, to: "/cadastros/produtos" },
-  { label: "Câmaras", icon: Warehouse, to: "/cadastros/camaras" },
-  { label: "Equipe", icon: UsersRound, to: "/configuracoes/colaboradores" },
-  { label: "Preparação", icon: Settings2, to: "/configuracoes/formatos" },
+  { label: "Cadastros", icon: Settings2, to: "/cadastros" },
   { label: "Diagnóstico", icon: ShieldCheck, to: "/diagnostico" },
 ];
 

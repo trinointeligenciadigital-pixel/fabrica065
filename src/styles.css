@@ -291,10 +291,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .register-heading { margin-bottom: 18px; }
-.catalog-tabs { display: flex; align-items: center; gap: 4px; margin-bottom: 16px; padding: 4px; border: 1px solid var(--line); border-radius: var(--radius); background: rgba(255,255,255,.7); width: fit-content; }
-.catalog-tabs a { min-height: 38px; display: inline-flex; align-items: center; gap: 7px; padding: 0 13px; border-radius: 7px; color: var(--muted); font-size: 13px; font-weight: 650; }
-.catalog-tabs a:hover { color: var(--ink); background: var(--surface); }
-.catalog-tabs a.active { background: var(--primary-soft); color: var(--primary-dark); }
+.administration-tabs { width: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-bottom: 18px; padding: 4px; border: 1px solid var(--line); border-radius: var(--radius); background: rgba(255,255,255,.72); }
+.administration-tabs a { min-height: 40px; display: inline-flex; align-items: center; gap: 7px; padding: 0 12px; border-radius: 7px; color: var(--muted); font-size: 12px; font-weight: 650; white-space: nowrap; }
+.administration-tabs a:hover { color: var(--ink); background: var(--surface); }
+.administration-tabs a.active { background: var(--primary-soft); color: var(--primary-dark); }
 .register-section { overflow: visible; }
 .register-form { display: grid; grid-template-columns: minmax(240px, 1fr) minmax(180px, .48fr) auto; align-items: end; gap: 14px; padding: 20px 20px 14px; }
 .register-form-simple { grid-template-columns: minmax(260px, 1fr) auto; max-width: 760px; }
@@ -333,13 +333,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 @media (max-width: 767px) {
   .access-page { padding: 14px; }
   .access-card { padding: 22px 18px; }
-  .catalog-tabs { width: 100%; overflow-x: auto; }
-  .catalog-tabs a { flex: 1 0 auto; justify-content: center; }
+  .administration-tabs { flex-wrap: nowrap; overflow-x: auto; scroll-snap-type: x proximity; }
+  .administration-tabs a { flex: 0 0 auto; justify-content: center; scroll-snap-align: start; }
   .register-form, .register-form-simple { grid-template-columns: 1fr; }
   .register-form .button { width: 100%; }
 }
-/* Preparação operacional */
-.setup-tabs { max-width: 100%; overflow-x: auto; }
 .setup-form { grid-template-columns: minmax(180px, .8fr) minmax(220px, 1fr) 140px auto; }
 .entity-form { grid-template-columns: minmax(160px, .45fr) minmax(260px, 1fr) auto; max-width: none; }
 .minimum-form { grid-template-columns: repeat(4, minmax(150px, 1fr)) auto; }

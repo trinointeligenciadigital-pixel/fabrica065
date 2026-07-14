@@ -1,10 +1,11 @@
 import { useMutation, useQuery } from "convex/react";
-import { ArchiveRestore, Box, Candy, Pencil, Plus, QrCode, Save, Snowflake, Warehouse, X } from "lucide-react";
+import { ArchiveRestore, Pencil, Plus, QrCode, Save, Snowflake, X } from "lucide-react";
 import { FormEvent, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { AdminShell } from "../components/AdminShell";
+import { AdministrationTabs } from "../components/AdministrationTabs";
 
 type CatalogSection = "products" | "flavors" | "chambers";
 
@@ -15,17 +16,17 @@ interface RegistersPageProps {
 
 const sectionCopy = {
   products: {
-    eyebrow: "Cadastros essenciais",
+    eyebrow: "Cadastros e configurações",
     title: "Produtos",
     description: "Defina o tipo de gelo e a unidade-base usada em todos os saldos.",
   },
   flavors: {
-    eyebrow: "Cadastros essenciais",
+    eyebrow: "Cadastros e configurações",
     title: "Sabores",
     description: "Cadastre as variações disponíveis para os produtos saborizados.",
   },
   chambers: {
-    eyebrow: "Cadastros essenciais",
+    eyebrow: "Cadastros e configurações",
     title: "Câmaras",
     description: "Organize os locais físicos que recebem produção e expedição.",
   },
@@ -39,16 +40,6 @@ function errorMessage(error: unknown) {
   if (text.includes("NOT_FOUND")) return "Este cadastro não existe mais. Atualize a página.";
   if (text.includes("UNAUTHORIZED")) return "Sua conta ainda não possui acesso administrativo.";
   return "Não foi possível salvar. Tente novamente.";
-}
-
-function CatalogTabs() {
-  return (
-    <nav className="catalog-tabs" aria-label="Tipos de cadastro">
-      <NavLink to="/cadastros/produtos"><Box size={17} /> Produtos</NavLink>
-      <NavLink to="/cadastros/sabores"><Candy size={17} /> Sabores</NavLink>
-      <NavLink to="/cadastros/camaras"><Warehouse size={17} /> Câmaras</NavLink>
-    </nav>
-  );
 }
 
 function TableLoading() {
@@ -286,7 +277,7 @@ export function RegistersPage({ section, integrationsReady }: RegistersPageProps
   return (
     <AdminShell integrationsReady={integrationsReady}>
       <section className="page-heading register-heading"><div><p className="eyebrow">{copy.eyebrow}</p><h1>{copy.title}</h1><p>{copy.description}</p></div></section>
-      <CatalogTabs />
+      <AdministrationTabs />
       {!integrationsReady ? (
         <div className="setup-notice" role="status"><Snowflake size={20} /><div><strong>Cadastros indisponíveis no modo demonstração</strong><span>Configure Clerk e Convex para persistir os dados.</span></div></div>
       ) : <ConnectedRegisters section={section} />}

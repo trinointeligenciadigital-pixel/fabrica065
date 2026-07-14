@@ -1,10 +1,10 @@
 import { useMutation, useQuery } from "convex/react";
-import { ArchiveRestore, Building2, PackageOpen, Pencil, Plus, Save, Scale, Tag, Trash2, Truck, X } from "lucide-react";
+import { ArchiveRestore, Pencil, Plus, Save, Scale, Trash2, X } from "lucide-react";
 import { FormEvent, useState } from "react";
-import { NavLink } from "react-router-dom";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { AdminShell } from "../components/AdminShell";
+import { AdministrationTabs } from "../components/AdministrationTabs";
 
 export type SetupSection = "formats" | "vehicles" | "customers" | "losses" | "minimums";
 
@@ -46,18 +46,6 @@ function EmptyRows({ text }: { text: string }) {
 
 function Status({ active }: { active: boolean }) {
   return <span className={"badge badge-" + (active ? "ok" : "inactive")}>{active ? "Ativo" : "Inativo"}</span>;
-}
-
-function SetupTabs() {
-  return (
-    <nav className="catalog-tabs setup-tabs" aria-label="Preparação operacional">
-      <NavLink to="/configuracoes/formatos"><PackageOpen size={17} /> Formatos</NavLink>
-      <NavLink to="/configuracoes/veiculos"><Truck size={17} /> Veículos</NavLink>
-      <NavLink to="/configuracoes/clientes"><Building2 size={17} /> Clientes</NavLink>
-      <NavLink to="/configuracoes/perdas"><Tag size={17} /> Perdas</NavLink>
-      <NavLink to="/configuracoes/minimos"><Scale size={17} /> Mínimos</NavLink>
-    </nav>
-  );
 }
 
 function FormatsPanel() {
@@ -304,8 +292,8 @@ function ConnectedSetup({ section }: { section: SetupSection }) {
 export function SetupPage({ section, integrationsReady }: SetupPageProps) {
   return (
     <AdminShell integrationsReady={integrationsReady}>
-      <section className="page-heading register-heading"><div><p className="eyebrow">Preparação operacional</p><h1>{copy[section][0]}</h1><p>{copy[section][1]}</p></div></section>
-      <SetupTabs />
+      <section className="page-heading register-heading"><div><p className="eyebrow">Cadastros e configurações</p><h1>{copy[section][0]}</h1><p>{copy[section][1]}</p></div></section>
+      <AdministrationTabs />
       {integrationsReady ? <ConnectedSetup section={section} /> : <div className="setup-notice"><div><strong>Configuração indisponível no modo demonstração</strong></div></div>}
     </AdminShell>
   );

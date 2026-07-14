@@ -18,14 +18,14 @@
 | Requisito | Evidência atual |
 |---|---|
 | TypeScript estrito | npx tsc -b e npm run build |
-| Testes automatizados | 34 testes unitários e 3 E2E públicos para autenticação, QR inválido e largura móvel |
+| Testes automatizados | 36 testes unitários e 3 E2E públicos para autenticação, QR inválido e largura móvel |
 | Qualidade estática | npm run lint |
 | Offline sem falso sucesso | banner global e bloqueio reativo da confirmação |
 | Diagnóstico operacional | verificação reativa de saldos negativos, referências, origens, sessões e contagens abertas |
 | Acessibilidade inicial | foco visível, link para pular ao conteúdo, estados textuais e auditoria Axe na tela pública |
 | Identidade no backend | bootstrap lazy e helper requireAdmin consultam admin ativo no banco |
 | Proteção das rotas | login Clerk obrigatório e estado de acesso pendente |
-| Persistência dos cadastros | criação, edição e inativação de produtos, sabores, câmaras, frota, clientes e equipe; demais configurações persistentes |
+| Persistência dos cadastros | hub único em `/cadastros`, com criação, edição e inativação de produtos, sabores, câmaras, frota, clientes e equipe; demais configurações persistentes |
 | QR de câmara | token não sequencial, QR em alta correção, layout A4 e tela pública validada |
 | Operação por QR | produção e perda com permissão no backend, conversão por formato, idempotência, confirmação e recibo real |
 | Operação administrativa | produção, perda e ajuste com autorização no backend, saldo projetado, confirmação e recibo real |

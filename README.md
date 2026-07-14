@@ -11,6 +11,7 @@ A fundação técnica está ativa no ambiente de desenvolvimento:
 - área administrativa protegida, com sincronização lazy do admin no primeiro login;
 - primeira conta ativada como admin de bootstrap e contas seguintes mantidas pendentes;
 - cadastros persistentes com criação, edição e inativação de produtos, sabores, câmaras, veículos, clientes e colaboradores;
+- hub único em `/cadastros` para produtos, sabores, câmaras, equipe e configurações operacionais;
 - colaboradores com PIN derivado por PBKDF2, inativação e permissões por câmara;
 - configuração de estoque mínimo por câmara, produto e sabor;
 - token operacional não sequencial e QR imprimível gerados para cada câmara;
@@ -24,7 +25,7 @@ A fundação técnica está ativa no ambiente de desenvolvimento:
 - diagnóstico administrativo em `/diagnostico`, com controles de integridade do ledger, sessões e contagens;
 - estados de carregamento, vazio, erro, acesso pendente e modo sem integração;
 - módulos carregados sob demanda para reduzir o pacote inicial;
-- 34 testes unitários, 3 testes E2E públicos, auditoria automatizada de acessibilidade, lint, TypeScript e build de produção aprovados.
+- 36 testes unitários, 3 testes E2E públicos, auditoria automatizada de acessibilidade, lint, TypeScript e build de produção aprovados.
 
 Sem as variáveis de ambiente, o dashboard entra em modo de demonstração e nenhuma movimentação é persistida.
 

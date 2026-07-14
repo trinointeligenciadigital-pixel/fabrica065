@@ -38,17 +38,24 @@ function AdminRoutes({ integrationsReady }: { integrationsReady: boolean }) {
         <Route path="/carregamentos" element={<LoadsPage integrationsReady={integrationsReady} />} />
         <Route path="/contagens" element={<CountsPage integrationsReady={integrationsReady} />} />
         <Route path="/diagnostico" element={<DiagnosticsPage integrationsReady={integrationsReady} />} />
+        <Route path="/cadastros" element={<Navigate to="/cadastros/produtos" replace />} />
         <Route path="/cadastros/produtos" element={<RegistersPage section="products" integrationsReady={integrationsReady} />} />
         <Route path="/cadastros/sabores" element={<RegistersPage section="flavors" integrationsReady={integrationsReady} />} />
         <Route path="/cadastros/camaras" element={<RegistersPage section="chambers" integrationsReady={integrationsReady} />} />
         <Route path="/cadastros/camaras/:chamberId/qr" element={<ChamberQrPage integrationsReady={integrationsReady} />} />
-        <Route path="/configuracoes/colaboradores" element={<CollaboratorsPage integrationsReady={integrationsReady} />} />
-        <Route path="/configuracoes/formatos" element={<SetupPage section="formats" integrationsReady={integrationsReady} />} />
-        <Route path="/configuracoes/veiculos" element={<SetupPage section="vehicles" integrationsReady={integrationsReady} />} />
-        <Route path="/configuracoes/clientes" element={<SetupPage section="customers" integrationsReady={integrationsReady} />} />
-        <Route path="/configuracoes/perdas" element={<SetupPage section="losses" integrationsReady={integrationsReady} />} />
-        <Route path="/configuracoes/minimos" element={<SetupPage section="minimums" integrationsReady={integrationsReady} />} />
-        <Route path="/configuracoes" element={<Navigate to="/configuracoes/formatos" replace />} />
+        <Route path="/cadastros/equipe" element={<CollaboratorsPage integrationsReady={integrationsReady} />} />
+        <Route path="/cadastros/formatos" element={<SetupPage section="formats" integrationsReady={integrationsReady} />} />
+        <Route path="/cadastros/veiculos" element={<SetupPage section="vehicles" integrationsReady={integrationsReady} />} />
+        <Route path="/cadastros/clientes" element={<SetupPage section="customers" integrationsReady={integrationsReady} />} />
+        <Route path="/cadastros/perdas" element={<SetupPage section="losses" integrationsReady={integrationsReady} />} />
+        <Route path="/cadastros/minimos" element={<SetupPage section="minimums" integrationsReady={integrationsReady} />} />
+        <Route path="/configuracoes/colaboradores" element={<Navigate to="/cadastros/equipe" replace />} />
+        <Route path="/configuracoes/formatos" element={<Navigate to="/cadastros/formatos" replace />} />
+        <Route path="/configuracoes/veiculos" element={<Navigate to="/cadastros/veiculos" replace />} />
+        <Route path="/configuracoes/clientes" element={<Navigate to="/cadastros/clientes" replace />} />
+        <Route path="/configuracoes/perdas" element={<Navigate to="/cadastros/perdas" replace />} />
+        <Route path="/configuracoes/minimos" element={<Navigate to="/cadastros/minimos" replace />} />
+        <Route path="/configuracoes" element={<Navigate to="/cadastros/formatos" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Suspense>

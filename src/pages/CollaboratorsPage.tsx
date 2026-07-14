@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { AdminShell } from "../components/AdminShell";
+import { AdministrationTabs } from "../components/AdministrationTabs";
 
 interface CollaboratorsPageProps {
   integrationsReady: boolean;
@@ -193,7 +194,8 @@ function ConnectedCollaborators() {
 export function CollaboratorsPage({ integrationsReady }: CollaboratorsPageProps) {
   return (
     <AdminShell integrationsReady={integrationsReady}>
-      <section className="page-heading register-heading"><div><p className="eyebrow">Equipe operacional</p><h1>Colaboradores e permissões</h1><p>Defina quem pode produzir ou registrar saídas em cada câmara.</p></div></section>
+      <section className="page-heading register-heading"><div><p className="eyebrow">Cadastros e configurações</p><h1>Colaboradores e permissões</h1><p>Defina quem pode produzir ou registrar saídas em cada câmara.</p></div></section>
+      <AdministrationTabs />
       {integrationsReady ? <ConnectedCollaborators /> : <div className="setup-notice"><div><strong>Equipe indisponível no modo demonstração</strong></div></div>}
     </AdminShell>
   );

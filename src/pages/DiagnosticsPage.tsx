@@ -13,7 +13,7 @@ const actionByCheck: Record<string, { label: string; to: string }> = {
   "orphan-references": { label: "Abrir histórico", to: "/historico" },
   "source-trail": { label: "Auditar histórico", to: "/historico" },
   "stale-counts": { label: "Revisar contagens", to: "/contagens" },
-  "expired-sessions": { label: "Revisar equipe", to: "/configuracoes/colaboradores" },
+  "expired-sessions": { label: "Revisar equipe", to: "/cadastros/equipe" },
 };
 
 function formatDate(value: number) {
